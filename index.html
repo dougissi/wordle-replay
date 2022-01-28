@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="Doug Issichopoulos" />
+  <meta name="description" content="Need help solving the daily Wordle puzzle? This free tool can help!" />
+  <title>Wordle Helper</title>
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Boostrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+<body>
+
+  <!-- header -->
+  <div class="container-fluid" id="header">
+    <div class="row align-items-center">
+      <div class="col-1">
+        <a href="https://www.dougissi.com" target="_blank" rel="noopener noreferrer"><img id="homepage" src="assets/doug_headshot.png" alt="dougissi.com" /></a>
+      </div>
+      <div class="col-2">
+        <button type="button" class="btn btn-primary" id="instructions-button">Instructions</button>
+      </div>
+      <div class="col-6 text-center">
+        <h1>Wordle Helper</h1>
+      </div>
+      <div class="col-2"></div>
+      <div class="col-1 text-center">
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfKeTZCnnicWaVnn0PpGWvUjZvjrXeA7rx1wZUKCNnJJbIthA/viewform?usp=sf_link" target="_blank" rel="noopener noreferrer">Feedback</a>
+      </div>
+    </div>
+    <div class="row" id="instructions">
+      <div class="col">
+        <!-- <h3>Welcome to the Wordle Helper!</h3> -->
+        <h5>What does the Wordle Helper do?</h5>
+        <p>For any <a href="https://www.powerlanguage.co.uk/wordle/" target="_blank" rel="noopener noreferrer">Wordle</a> that's been published to date, this Wordle Helper provides the top suggestions for your next guess.</p>
+        <h5>What is it for?</h5>
+        <ul>
+          <li>Got stuck on today's Wordle and need help making your next guess?</li>
+          <li>Want to learn better Wordle strategy?</li>
+          <li>Missed yesterday's Wordle but still want to give it a shot?</li>
+          <li>Obsessed with Wordle and want to find every word that's ever been used?</li>
+        </ul>
+        <h5>How to play</h5>
+        <ul>
+          <li>Select the date of the Wordle you would like to play (the default is today). You can play any Wordle going back to June 19, 2021.</li>
+          <li>Enter guesses just like you are used to with Wordle.</li>
+          <li>Optionally open the "Suggestions" pane beneath the keyboard to get suggestions for your next guess.</li>
+        </ul>
+        <h5>Author</h5>
+        <p>The Wordle Helper was written by Doug Issichopoulos (<a href="https://www.dougissi.com" target="_blank" rel="noopener noreferrer">dougissi.com</a>) in late January 2022.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- main content -->
+  <div class="container-fluid" id="main-content">
+    <div class="row">
+      <div class="col-lg-4 text-center" id="left-spacer"></div>
+      <div class="col-lg-4" id="guesses">
+        <div class="letter-tiles-grid">
+        </div>
+      </div>
+      <div class="col-lg-4" id="right-spacer"></div>
+    </div>
+  </div>
+
+  <div class="container-fluid" id="keyboard">
+    <div class="row">
+      <div class="col-lg-3"></div>
+      <div class="col-lg-6">
+        <div class="row keyboard-row" id="keyboard-row-top">
+          <div class="col button-key" id="81">q</div>
+          <div class="col button-key" id="87">w</div>
+          <div class="col button-key" id="69">e</div>
+          <div class="col button-key" id="82">r</div>
+          <div class="col button-key" id="84">t</div>
+          <div class="col button-key" id="89">y</div>
+          <div class="col button-key" id="85">u</div>
+          <div class="col button-key" id="73">i</div>
+          <div class="col button-key" id="79">o</div>
+          <div class="col button-key" id="80">p</div>
+        </div>
+        <div class="row keyboard-row" id="keyboard-row-middle">
+          <div class="spacer half"></div>
+          <div class="col button-key" id="65">a</div>
+          <div class="col button-key" id="83">s</div>
+          <div class="col button-key" id="68">d</div>
+          <div class="col button-key" id="70">f</div>
+          <div class="col button-key" id="71">g</div>
+          <div class="col button-key" id="72">h</div>
+          <div class="col button-key" id="74">j</div>
+          <div class="col button-key" id="75">k</div>
+          <div class="col button-key" id="76">l</div>
+          <div class="spacer half"></div>
+        </div>
+        <div class="row keyboard-row" id="keyboard-row-bottom">
+          <div class="col button-key" id="13">enter</div>
+          <div class="col button-key" id="90">z</div>
+          <div class="col button-key" id="88">x</div>
+          <div class="col button-key" id="67">c</div>
+          <div class="col button-key" id="86">v</div>
+          <div class="col button-key" id="66">b</div>
+          <div class="col button-key" id="78">n</div>
+          <div class="col button-key" id="77">m</div>
+          <div class="col button-key" id="8">&#11013;</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-3"></div>
+  </div>
+
+  <div class="container-fluid" id="suggestions-box">
+    <div class="row">
+      <div class="col text-center">
+        <button type="button" class="btn btn-primary" id="suggestions-button">Show Suggestions</button>
+      </div>
+    </div>
+    <div class="row" id="suggestions">
+      <div class="col-lg-4" id="word-selector">
+        <div class="top-word-suggestions">
+          <h5>Top Word Suggestions</h5>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="all-valid-words">
+          <h5>Remaining Possible Answers</h5>
+          <p id="num-valid-words"></p>
+          <div class="words-box" id="valid-words-box">
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="all-acceptable-words">
+          <h5>Remaining Acceptable Guesses</h5>
+          <p id="num-acceptable-words"></p>
+          <div class="words-box" id="acceptable-words-box">
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- hidden google sheets form -->
+  <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+  <form class="hidden-form" id="guess-result-form" action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSf_qogYPKORE_gsr_--EXVx_sHYR3UFZkI63bVA1uWKlGRQiQ/formResponse" method="post" target="hidden_iframe">
+    <label>Game Date</label>
+    <input type="text" id="guess-form-game-date" name="entry.670048614"></input>
+    <label>Client IP</label>
+    <input type="text" id="guess-form-client-ip" name="entry.1967571849"></input>
+    <label>Round</label>
+    <input type="text" id="guess-form-round" name="entry.635969451">
+    <label>Guess</label>
+    <input type="text" id="guess-form-guess-word" name="entry.670924862">
+    <label>Result</label>
+    <input type="text" id="guess-form-result" name="entry.566640870">
+    <label>Source</label>
+    <input type="text" id="guess-form-source" name="entry.981218756">
+    <button type="submit" id="guess-form-submit-button">Send</button>
+  </form>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="assets/Mjxczv6.js" charset="utf-8"></script>
+  <script src="assets/xGp9Bi.js" charset="utf-8"></script>
+  <script src="assets/fLE0b4w.js" charset="utf-8"></script>
+  <script src="assets/KdTX.js" charset="utf-8"></script>
+  <script src="wordle-helper.js" charset="utf-8"></script>
+</body>
+
+</html>

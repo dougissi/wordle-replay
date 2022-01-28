@@ -1,0 +1,108 @@
+:root {
+  --green:rgb(106, 170, 100);  /* #6aaa64 */
+  --yellow:rgb(201, 180, 88);  /* #c9b458 */
+  --gray:rgb(134, 136, 138);  /* #86888a */
+  --lightgray:rgb(211, 211, 211);  /* #d3d3d3; */
+  --border: 1px solid black;
+}
+
+div {
+  font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
+}
+
+#homepage {
+  height: 50px;
+}
+
+#header {
+  border-bottom: 1px solid black;
+  margin-top: auto;
+}
+
+h1 {
+  font-weight: 700;
+  font-size: 36px;
+  letter-spacing: 0.2rem;
+  text-transform: uppercase;
+}
+
+#main-content {
+  margin-top: 0.5rem;
+}
+
+.overlay {
+  border: var(--border);
+  text-align: center;
+  padding: 10px;
+  width: 30%;
+  position: fixed;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: lightsteelblue;
+}
+
+.tile {
+    border: var(--border);
+    width: 100%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin: 5px auto;
+    font-size: 50px;
+    line-height: 2rem;
+    font-weight: bold;
+    vertical-align: middle;
+    box-sizing: border-box;
+    text-transform: uppercase;
+    user-select: none;
+}
+
+.tile::before {
+    content: '';
+    display: inline-block;
+    padding-bottom: 100%;
+}
+
+#keyboard {
+  padding: 10px;
+}
+
+.button-key {
+  background-color: var(--lightgray);
+  border-radius: 10px;
+  margin: 5px;
+  padding: 5px;
+  font-size: 30px;
+  font-weight: bold;
+  text-align: center;
+  text-transform: uppercase;
+  touch-action: manipulation;
+}
+
+.half {
+  flex: 0.5;
+}
+
+#suggestions-button {
+  margin-bottom: 1rem;
+}
+
+.top-word-button {
+  margin-bottom: 2px;
+  margin-right: 5px;
+
+}
+
+.words-box {
+  border: var(--border);
+  width: 100%;
+  height: 10rem;
+  overflow-y: scroll;
+  resize: both;
+}
+
+.hidden-form {
+  display: none;
+}
