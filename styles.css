@@ -67,15 +67,14 @@ h1 {
 
 #keyboard {
   padding: 10px;
-  height: 200px;
 }
 
 .button-key {
+  line-height: 6rem;
   background-color: var(--lightgray);
   border-radius: 10px;
-  margin: 5px;
-  padding: 5px;
-  font-size: 30px;
+  margin: 5px 2px;
+  font-size: 1.5rem;
   font-weight: bold;
   text-align: center;
   text-transform: uppercase;
