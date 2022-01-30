@@ -20,7 +20,10 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-TXJ8PZ981G"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
     gtag('js', new Date());
 
     gtag('config', 'G-TXJ8PZ981G');
@@ -34,25 +37,24 @@
   <!-- header -->
   <div class="container-fluid" id="header">
     <div class="row align-items-center">
-      <div class="col-1">
+      <div class="col-3">
         <a href="https://www.dougissi.com" target="_blank" rel="noopener noreferrer"><img id="homepage" src="assets/images/doug_headshot.png" alt="dougissi.com" /></a>
-      </div>
-      <div class="col-2">
-        <button type="button" class="btn btn-primary" id="instructions-button">Instructions</button>
       </div>
       <div class="col-6 text-center">
         <h1>Wordle Helper</h1>
       </div>
-      <div class="col-2"></div>
-      <div class="col-1 text-center">
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfKeTZCnnicWaVnn0PpGWvUjZvjrXeA7rx1wZUKCNnJJbIthA/viewform?usp=sf_link" target="_blank" rel="noopener noreferrer">Feedback</a>
+      <div class="col-3 text-center">
+        <nav class="nav justify-content-end">
+          <a class="nav-link" href="#" id="about-button">About</a>
+          <a class="nav-link" href="https://docs.google.com/forms/d/e/1FAIpQLSfKeTZCnnicWaVnn0PpGWvUjZvjrXeA7rx1wZUKCNnJJbIthA/viewform?usp=sf_link" target="_blank" rel="noopener noreferrer">Feedback</a>
+        </nav>
       </div>
     </div>
-    <div class="row" id="instructions">
+    <div class="row" id="about">
       <div class="col">
         <!-- <h3>Welcome to the Wordle Helper!</h3> -->
         <h5>What does the Wordle Helper do?</h5>
-        <p>For any <a href="https://www.powerlanguage.co.uk/wordle/" target="_blank" rel="noopener noreferrer">Wordle</a> that's been published to date, this Wordle Helper provides the top suggestions for your next guess.</p>
+        <p>For any <a href="https://www.powerlanguage.co.uk/wordle/" target="_blank" rel="noopener noreferrer">Wordle</a> that's been published to date, this Wordle Helper provides what it considers to be the top suggestions for your next guess.</p>
         <h5>What is it for?</h5>
         <ul>
           <li>Got stuck on today's Wordle and need help making your next guess?</li>
@@ -75,14 +77,33 @@
   <!-- main content -->
   <div class="container-fluid" id="main-content">
     <div class="row">
-      <div class="col-lg-4 text-center" id="left-spacer"></div>
+      <div class="col-lg-4 text-center" id="date-box"></div>
       <div class="col-lg-4" id="guesses">
         <div class="letter-tiles-grid">
         </div>
       </div>
-      <div class="col-lg-4" id="right-spacer"></div>
+      <div class="col-lg-4" id="suggestions-box">
+        <div class="row">
+          <div class="col text-center">
+            <button type="button" class="btn btn-primary" id="suggestions-button">Show Suggestions</button>
+          </div>
+        </div>
+        <div class="container-fluid" id="suggestions">
+          <div class="row top-word-suggestions subsection">
+            <h5>Top Word Suggestions</h5>
+          </div>
+          <div class="row all-valid-words subsection">
+            <h5>Remaining Valid Guesses</h5>
+            <p id="num-valid-words"></p>
+            <div class="words-box" id="valid-words-box">
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
+
+
 
   <div class="container-fluid" id="keyboard">
     <div class="row">
@@ -129,37 +150,7 @@
     <div class="col-lg-3"></div>
   </div>
 
-  <div class="container-fluid" id="suggestions-box">
-    <div class="row">
-      <div class="col text-center">
-        <button type="button" class="btn btn-primary" id="suggestions-button">Show Suggestions</button>
-      </div>
-    </div>
-    <div class="row" id="suggestions">
-      <div class="col-lg-4" id="word-selector">
-        <div class="top-word-suggestions">
-          <h5>Top Word Suggestions</h5>
-        </div>
-      </div>
-      <div class="col-lg-4">
-        <div class="all-valid-words">
-          <h5>Remaining Possible Answers</h5>
-          <p id="num-valid-words"></p>
-          <div class="words-box" id="valid-words-box">
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-4">
-        <div class="all-acceptable-words">
-          <h5>Remaining Acceptable Guesses</h5>
-          <p id="num-acceptable-words"></p>
-          <div class="words-box" id="acceptable-words-box">
-          </div>
-        </div>
-      </div>
-    </div>
 
-  </div>
 
   <!-- hidden google sheets form -->
   <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
@@ -174,8 +165,10 @@
     <input type="text" id="guess-form-guess-word" name="entry.670924862">
     <label>Result</label>
     <input type="text" id="guess-form-result" name="entry.566640870">
-    <label>Source</label>
-    <input type="text" id="guess-form-source" name="entry.981218756">
+    <label>Suggested</label>
+    <input type="text" id="guess-form-suggested" name="entry.981218756">
+    <label>Suggestions Visible</label>
+    <input type="text" id="guess-form-suggestions-visible" name="entry.512252507">
     <button type="submit" id="guess-form-submit-button">Send</button>
   </form>
 

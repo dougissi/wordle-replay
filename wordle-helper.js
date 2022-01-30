@@ -4,7 +4,6 @@ let date = today;
 let numLetters = 5;
 let round = null;
 let validWords = null;
-let acceptableWords = null;
 let knownLetterMinCounts = null;
 let knownLetterMaxCounts = null;
 let regex = null;
@@ -66,7 +65,7 @@ class MapWithDefault extends Map {
 
 
 $("#suggestions").hide();
-$("#instructions").hide();
+$("#about").hide();
 buildDateSelector();
 startGame();
 
@@ -99,7 +98,7 @@ function getOOO() {
 
 function buildDateSelector() {
   let dateSelectorHTML = `<label for="date-selector">Wordle date:</label>\n<input type="date" id="date-selector" value="${today}" min="2021-06-19" max="${today}" onchange="dateChange();">`;
-  $("#left-spacer").append(dateSelectorHTML);
+  $("#date-box").append(dateSelectorHTML);
 }
 
 function addEmptyGuessRows() {
@@ -129,10 +128,8 @@ function startGame() {
   }
   ooo = getOOO();
 
-  validWords = wordleAnswers;
-  acceptableWords = wordleAcceptableWords;
-  updateWordListText(validWords, "valid");
-  updateWordListText(acceptableWords, "acceptable");
+  validWords = wordleAcceptableWords;
+  updateValidWordsText();
   topWords = getNextWordOptions();
   buildTopWordsSelector();
   addEmptyGuessRows();
@@ -159,11 +156,7 @@ function getSortedWordScores() {
 
   // scores
   let wordScores = new MapWithDefault(() => []);
-  let wordList = validWords;
-  // if (validWords.size > 1) {
-  //   wordList = acceptableWords;
-  // }
-  for (const word of wordList) {
+  for (const word of validWords) {
     let score = 0;
     for (const letter of word) {
       score += letterFreq.get(letter)
@@ -262,7 +255,7 @@ function getNextWordOptions() {
           matchedWords.add(word);
           const dupId = `${maxNewDuplicates}|${score}`;
           dupIdtoTopWords.get(dupId).push(word);
-          topWords.set(word, `new duplicates: ${maxNewDuplicates}`)
+          topWords.set(word, `new duplicate letters: ${maxNewDuplicates}`)
           maxScore = score
         }
       }
@@ -409,10 +402,10 @@ function updateRegEx() {
   }
 }
 
-function updateWordList(wordList) {
+function updateValidWords() {
   let updatedWordList = new Set();
 
-  for (const word of wordList) {
+  for (const word of validWords) {
 
     if (!word.match(regex)) {
       continue;
@@ -439,30 +432,19 @@ function updateWordList(wordList) {
     }
   }
 
-  return updatedWordList;
+  validWords = updatedWordList;
 }
 
-function updateWordListText(wordList, type) {
-  if (type != "valid" & type != "acceptable") {
-    throw "type must be 'valid' or 'acceptable'";
-  }
-
-  $(`#num-${type}-words`).text(`Count: ${wordList.size}`);
-  $(`#${type}-words-box`).text(`${[...wordList].join(", ")}`);
-}
-
-function updateValidAndAcceptableWords() {
-  validWords = updateWordList(validWords);
-  updateWordListText(validWords, "valid")
-
-  acceptableWords = updateWordList(acceptableWords);
-  updateWordListText(acceptableWords, "acceptable")
+function updateValidWordsText() {
+  $("#num-valid-words").text(`Count: ${validWords.size}`);
+  $("#valid-words-box").text(`${[...validWords].join(", ")}`);
 }
 
 function evaluateGuessAndGetNextWordOptions(guessWord, guessResult) {
   evaluateGuess(guessWord, guessResult);
   updateRegEx();
-  updateValidAndAcceptableWords();
+  updateValidWords();
+  updateValidWordsText();
   topWords = getNextWordOptions();
 }
 
@@ -486,7 +468,7 @@ function buildTopWordsSelector() {
   for (const [word, description] of topWords) {
     // let topWordHTML = `<div class="row top-word-option"><div class="col-4"><input type="radio" name="guess-selector" id="${word}-radio-button" value="${word}">\n<label for="${word}-radio-button">${word}</label></div><div class="col-8">${description}</div></div>`;
     // let topWordHTML = `<div class="row top-word-option"><div class="col-1"><button type="button" class="btn btn-primary top-word-button">${word}</button></div><div class="col-11">${description}</div></div>`;
-    let topWordHTML = `<div class="d-flex flex-row align-items-center top-word-option"><div><button type="button" class="btn btn-primary top-word-button">${word}</button></div><div>${description}</div></div>`;
+    let topWordHTML = `<div class="d-flex flex-row align-items-center top-word-option"><div><button type="button" class="btn btn-primary top-word-button" id="${word}-suggested-button">${word}</button></div><div>${description}</div></div>`;
     $(".top-word-suggestions").append(topWordHTML);
   }
 }
@@ -559,10 +541,15 @@ function colorGuess(guess, guessResult) {
 }
 
 function submitGuessResult(guessResult) {
-  // get source of guess
-  let guessSource = "own";
-  if ($(`#${guess}-radio-button`).prop("checked")) { // radio button for guess is checked
-    guessSource = "suggested";
+  let suggestionsButtonText = $("#suggestions-button").text();
+  let suggestionsVisible = "true";
+  if (suggestionsButtonText.search("Show") >= 0) {
+    suggestionsVisible = "false";
+  }
+
+  let suggested = "false";
+  if ($(`#${guess}-suggested-button`).length) {  // suggested button for word exists
+    suggested = "true";
   }
 
   $("#guess-form-game-date").val(date);
@@ -570,7 +557,8 @@ function submitGuessResult(guessResult) {
   $("#guess-form-round").val(round);
   $("#guess-form-guess-word").val(guess);
   $("#guess-form-result").val(guessResult);
-  $("#guess-form-source").val(guessSource);
+  $("#guess-form-suggested").val(suggested);
+  $("#guess-form-suggestions-visible").val(suggestionsVisible);
   $("#guess-form-submit-button").click();
 }
 
@@ -594,9 +582,6 @@ function keyActions(key, keyCode) {
         ownWord = ownWord.slice(0, ownWordIndex);
         addLetterToTile(" ", ownWordIndex);
         if (guess) {
-          // $(".letter-color-selectors").hide()
-          // clearLetterColorSelections();
-          $(`#${guess}-radio-button`).prop("checked", false);
           guess = null;
         }
       }
@@ -604,7 +589,6 @@ function keyActions(key, keyCode) {
       if (ownWord.length == numLetters) {
         if (wordleAcceptableWords.has(ownWord)) {
           guess = ownWord;
-          $(`#${guess}-radio-button`).prop("checked", true);
           processGuess();
         } else {
           let invalidWordOverlay = `<div class="overlay"><h2>"${ownWord}" not in Wordle word list</h2><p>Please enter a different word.</p><button class="overlay-button continue">Continue</button></div>`
@@ -678,11 +662,12 @@ $("#suggestions-button").click( function() {
   } else {
     throw "suggestions button must contain 'Show' or 'Hide'"
   }
+  $(this).blur();
 })
 
-// when instructions button gets clicked
-$("#instructions-button").click( function() {
-  $("#instructions").toggle();
+// when about button gets clicked
+$("#about-button").click( function() {
+  $("#about").toggle();
 })
 
 function endGame(verdict) {
@@ -714,5 +699,6 @@ $(document).on("click", ".continue", function() {
 
 function dateChange() {
   date = $("#date-selector").val();
+  $("#date-selector").blur();  // remove focus from date selector; prevent keyboard event interference
   restartGame();
 }

@@ -74,7 +74,7 @@ h1 {
   background-color: var(--lightgray);
   border-radius: 10px;
   margin: 5px 2px;
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: bold;
   text-align: center;
   text-transform: uppercase;
@@ -85,14 +85,14 @@ h1 {
   flex: 0.5;
 }
 
-#suggestions-button {
-  margin-bottom: 1rem;
-}
-
 .top-word-button {
   margin-bottom: 2px;
   margin-right: 5px;
 
+}
+
+.subsection {
+  padding-top: 10px;
 }
 
 .words-box {
