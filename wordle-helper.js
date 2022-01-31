@@ -221,11 +221,13 @@ function newDuplicatesMinimized(word, maxNewDuplicates) {
       continue;
     }
 
-    if (knownLetterMinCounts.has(letter)) {
-      newDuplicates += count - 1 - knownLetterMinCounts.get(letter);
-    } else {
-      newDuplicates += count - 1;
-    }
+    // if (knownLetterMinCounts.has(letter)) {
+    //   newDuplicates += count - 1 - knownLetterMinCounts.get(letter);
+    // } else {
+    //   newDuplicates += count - 1;
+    // }
+
+    newDuplicates += count - 1;
   }
 
   if (newDuplicates <= maxNewDuplicates) {
@@ -254,7 +256,7 @@ function getNextWordOptions() {
           matchedWords.add(word);
           const dupId = `${maxNewDuplicates}|${score}`;
           dupIdtoTopWords.get(dupId).push(word);
-          topWords.set(word, `new duplicate letters: ${maxNewDuplicates}`)
+          topWords.set(word, `duplicate letters: ${maxNewDuplicates}`)
           maxScore = score
         }
       }
