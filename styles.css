@@ -26,6 +26,10 @@ h1 {
   text-transform: uppercase;
 }
 
+#about {
+  display: none;
+}
+
 #main-content {
   margin-top: 0.5rem;
 }

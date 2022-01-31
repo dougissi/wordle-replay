@@ -65,7 +65,6 @@ class MapWithDefault extends Map {
 
 
 $("#suggestions").hide();
-$("#about").hide();
 buildDateSelector();
 startGame();
 
@@ -668,6 +667,11 @@ $("#suggestions-button").click( function() {
 // when about button gets clicked
 $("#about-button").click( function() {
   $("#about").toggle();
+})
+
+$("#restart-button").click( function() {
+  $(this).blur();
+  restartGame();
 })
 
 function endGame(verdict) {
