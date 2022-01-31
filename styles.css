@@ -34,6 +34,10 @@ h1 {
   margin-top: 0.5rem;
 }
 
+.date-selector {
+  font-size: 1.5rem;
+}
+
 .overlay {
   border: var(--border);
   text-align: center;

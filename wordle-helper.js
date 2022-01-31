@@ -96,7 +96,7 @@ function getOOO() {
 }
 
 function buildDateSelector() {
-  let dateSelectorHTML = `<label for="date-selector">Wordle date:</label>\n<input type="date" id="date-selector" value="${today}" min="2021-06-19" max="${today}" onchange="dateChange();">`;
+  let dateSelectorHTML = `<label class="date-selector" for="date-selector-button">Wordle date:</label>\n<input type="date" class="date-selector" id="date-selector-button" value="${today}" min="2021-06-19" max="${today}" onchange="dateChange();">`;
   $("#date-box").append(dateSelectorHTML);
 }
 
@@ -465,9 +465,7 @@ $.getJSON("https://api.ipify.org?format=json", function(data) {
 function buildTopWordsSelector() {
   $(".top-word-option").remove()
   for (const [word, description] of topWords) {
-    // let topWordHTML = `<div class="row top-word-option"><div class="col-4"><input type="radio" name="guess-selector" id="${word}-radio-button" value="${word}">\n<label for="${word}-radio-button">${word}</label></div><div class="col-8">${description}</div></div>`;
-    // let topWordHTML = `<div class="row top-word-option"><div class="col-1"><button type="button" class="btn btn-primary top-word-button">${word}</button></div><div class="col-11">${description}</div></div>`;
-    let topWordHTML = `<div class="d-flex flex-row align-items-center top-word-option"><div><button type="button" class="btn btn-primary top-word-button" id="${word}-suggested-button">${word}</button></div><div>${description}</div></div>`;
+    let topWordHTML = `<div class="d-flex flex-row align-items-center top-word-option"><div><button type="button" class="btn btn-primary top-word-button btn-lg" id="${word}-suggested-button">${word}</button></div><div>${description}</div></div>`;
     $(".top-word-suggestions").append(topWordHTML);
   }
 }
@@ -592,7 +590,7 @@ function keyActions(key, keyCode) {
         } else {
           let invalidWordOverlay = `<div class="overlay"><h2>"${ownWord}" not in Wordle word list</h2><p>Please enter a different word.</p><button class="overlay-button continue">Continue</button></div>`
           $(invalidWordOverlay).insertBefore($("#main-content"));
-          $("#date-selector").prop("disabled", true);
+          $("#date-selector-button").prop("disabled", true);
         }
       }
     }
@@ -685,24 +683,24 @@ function endGame(verdict) {
   }
   let endgameOverlay = `<div class="overlay"><h2>${header}</h2><p>Want to play again?</p><p>Remember: you can also play Wordle from any date in the past.</p><button class="overlay-button play-again">Let's go</button></div>`
   $(endgameOverlay).insertBefore($("#main-content"));
-  $("#date-selector").prop("disabled", true);
+  $("#date-selector-button").prop("disabled", true);
 }
 
 // when play again? button is clicked
 $(document).on("click", ".play-again", function() {
   $(".overlay").remove();
-  $("#date-selector").prop("disabled", false);
+  $("#date-selector-button").prop("disabled", false);
   restartGame();
 })
 
 // when continue button is clicked
 $(document).on("click", ".continue", function() {
   $(".overlay").remove();
-  $("#date-selector").prop("disabled", false);
+  $("#date-selector-button").prop("disabled", false);
 })
 
 function dateChange() {
-  date = $("#date-selector").val();
-  $("#date-selector").blur();  // remove focus from date selector; prevent keyboard event interference
+  date = $("#date-selector-button").val();
+  $("#date-selector-button").blur();  // remove focus from date selector; prevent keyboard event interference
   restartGame();
 }
