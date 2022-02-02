@@ -30,6 +30,10 @@ h1 {
   display: none;
 }
 
+#close-about-button {
+  margin-bottom: 5px;
+}
+
 #main-content {
   margin-top: 0.5rem;
 }
