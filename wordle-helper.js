@@ -1,5 +1,6 @@
 // Global variables
 const today = getDateToday();
+const earliestDate = "2021-06-19";
 let date = today;
 let numLetters = 5;
 let round = null;
@@ -96,7 +97,7 @@ function getOOO() {
 }
 
 function buildDateSelector() {
-  let dateSelectorHTML = `<label class="date-selector" for="date-selector-button">Wordle date:</label>\n<input type="date" class="date-selector" id="date-selector-button" value="${today}" min="2021-06-19" max="${today}" onchange="dateChange();">`;
+  let dateSelectorHTML = `<label class="date-selector" for="date-selector-button">Wordle date:</label>\n<input type="date" class="date-selector" id="date-selector-button" value="${today}" min="${earliestDate}" max="${today}" onchange="dateChange();">`;
   $("#date-box").append(dateSelectorHTML);
 }
 
@@ -664,10 +665,9 @@ $("#suggestions-button").click( function() {
   $(this).blur();
 })
 
-// when about button gets clicked
-$("#about-button").click( function() {
+function toggleAbout() {
   $("#about").toggle();
-})
+}
 
 $("#restart-button").click( function() {
   $(this).blur();
@@ -702,7 +702,14 @@ $(document).on("click", ".continue", function() {
 })
 
 function dateChange() {
-  date = $("#date-selector-button").val();
-  $("#date-selector-button").blur();  // remove focus from date selector; prevent keyboard event interference
-  restartGame();
+  let newDate = $("#date-selector-button").val();
+  console.log("new date: " + newDate)
+  $("#bad-date-message").remove();  // if present
+  if (!newDate | newDate < earliestDate | newDate > today) {
+    $("#date-box").append(`<p id="bad-date-message">Invalid date; still using ${date}<p>`);
+  } else {
+    date = newDate;
+    $("#date-selector-button").blur();  // remove focus from date selector; prevent keyboard event interference
+    restartGame();
+  }
 }
