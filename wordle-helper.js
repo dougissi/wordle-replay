@@ -703,13 +703,13 @@ $(document).on("click", ".continue", function() {
 
 function dateChange() {
   let newDate = $("#date-selector-button").val();
-  console.log("new date: " + newDate)
   $("#bad-date-message").remove();  // if present
+  $("#date-selector-button").blur();  // remove focus from date selector; prevent keyboard event interference
   if (!newDate | newDate < earliestDate | newDate > today) {
     $("#date-box").append(`<p id="bad-date-message">Invalid date; still using ${date}<p>`);
   } else {
     date = newDate;
-    $("#date-selector-button").blur();  // remove focus from date selector; prevent keyboard event interference
+
     restartGame();
   }
 }
