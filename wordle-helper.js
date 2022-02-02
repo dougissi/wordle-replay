@@ -706,7 +706,7 @@ function dateChange() {
   console.log("new date: " + newDate)
   $("#bad-date-message").remove();  // if present
   if (!newDate | newDate < earliestDate | newDate > today) {
-    $("#date-box").append(`<p id="bad-date-message" style="color: red; font-size=1.5rem;">Invalid date; still using ${date}<p>`);
+    $("#date-box").append(`<p id="bad-date-message">Invalid date; still using ${date}<p>`);
   } else {
     date = newDate;
     $("#date-selector-button").blur();  // remove focus from date selector; prevent keyboard event interference

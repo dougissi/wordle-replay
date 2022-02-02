@@ -42,6 +42,10 @@ h1 {
   font-size: 1.5rem;
 }
 
+#bad-date-message {
+  color: red;
+}
+
 .overlay {
   border: var(--border);
   text-align: center;
