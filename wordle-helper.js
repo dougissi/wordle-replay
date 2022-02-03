@@ -709,7 +709,6 @@ function dateChange() {
     $("#date-box").append(`<p id="bad-date-message">Invalid date; still using ${date}<p>`);
   } else {
     date = newDate;
-
     restartGame();
   }
 }
