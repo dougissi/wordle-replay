@@ -59,6 +59,14 @@ h1 {
   background-color: lightsteelblue;
 }
 
+#guessIcons {
+  line-height: 1rem;
+}
+
+#copy-to-clipboard-button {
+  margin-top: 5px;
+}
+
 .tile {
     border: var(--border);
     width: 100%;

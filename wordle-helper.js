@@ -14,6 +14,7 @@ let ownWord = null;
 let ownWordIndex = null;
 let topWords = null;
 let guess = null;
+let guessIconsByRound = [];
 let guessResultsByPosition = null;
 let ooo = null;
 const defaultNumTries = 6;
@@ -48,6 +49,11 @@ const letterToKeyCode = new Map([
   ["b", 66],
   ["n", 78],
   ["m", 77],
+]);
+const guessResultCharacterToIcon = new Map([
+  ["+", "🟩"],  // "&#129001;"
+  ["o", "🟨"],  // "&#129000;"
+  ["-", "⬜"],  // "&#11036;"
 ]);
 
 
@@ -122,6 +128,7 @@ function startGame() {
   ownWord = "";
   ownWordIndex = 0;
   guess = null;
+  guessIconsByRound = [];
   guessResultsByPosition = [];
   for (let i = 0; i < numLetters; i++) {
     guessResultsByPosition.push(null);
@@ -591,7 +598,7 @@ function keyActions(key, keyCode) {
           guess = ownWord;
           processGuess();
         } else {
-          let invalidWordOverlay = `<div class="overlay"><h2>"${ownWord}" not in Wordle word list</h2><p>Please enter a different word.</p><button class="overlay-button continue">Continue</button></div>`
+          let invalidWordOverlay = `<div class="overlay"><h2>"${ownWord}" not in Wordle word list</h2><p>Please enter a different word.</p><button class="btn btn-primary overlay-button continue">Continue</button></div>`
           $(invalidWordOverlay).insertBefore($("#main-content"));
           $("#date-selector-button").prop("disabled", true);
         }
@@ -618,6 +625,13 @@ function processGuess() {
   guessResult = getGuessResult(guess);
   colorGuess(guess, guessResult);
   submitGuessResult(guessResult);
+
+  // guess icons
+  let guessIcons = "";
+  for (const letterResult of guessResult) {
+    guessIcons += guessResultCharacterToIcon.get(letterResult);
+  }
+  guessIconsByRound.push(guessIcons);
 
   // check if found final word
   let resultsSet = new Set(guessResult);
@@ -683,10 +697,17 @@ function endGame(verdict) {
   } else {
     throw "verdict can only be 'won' or 'lost'";
   }
-  let endgameOverlay = `<div class="overlay"><h2>${header}</h2><p>Want to play again?</p><p>Remember: you can also play Wordle from any date in the past.</p><button class="overlay-button play-again">Let's go</button></div>`
+  let endgameOverlay = `<div class="overlay"><h2>${header}</h2><p id="guessIcons">${guessIconsByRound.join("<br>")}<br><button class="btn btn-secondary" id="copy-to-clipboard-button">Copy to Clipboard</button></p><p>Want to play again?</p><p>Remember: you can also play Wordle from any date in the past.</p><button class="btn btn-primary overlay-button play-again">Let's go</button></div>`;
   $(endgameOverlay).insertBefore($("#main-content"));
   $("#date-selector-button").prop("disabled", true);
 }
+
+// when copy to clipboard button clicked
+$(document).on("click", "#copy-to-clipboard-button", function() {
+  let shareText = `Wordle date: ${date}\nGuesses: ${round}\n\n${guessIconsByRound.join("\n")}\n\nhttps://dougissi.com/wordle-helper`;
+  navigator.clipboard.writeText(shareText);
+  $("#copy-to-clipboard-button").blur();
+})
 
 // when play again? button is clicked
 $(document).on("click", ".play-again", function() {
