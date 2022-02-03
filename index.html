@@ -45,18 +45,33 @@
       </div>
       <div class="col-3 text-center">
         <nav class="nav justify-content-end">
+          <a class="nav-link" href="#" id="custom-button" onclick="toggleCustom();">Create Your Own</a>
           <a class="nav-link" href="#" id="about-button" onclick="toggleAbout();">About</a>
           <a class="nav-link" href="https://docs.google.com/forms/d/e/1FAIpQLSfKeTZCnnicWaVnn0PpGWvUjZvjrXeA7rx1wZUKCNnJJbIthA/viewform?usp=sf_link" target="_blank" rel="noopener noreferrer">Feedback</a>
         </nav>
+      </div>
+    </div>
+    <div class="row" id="custom">
+      <div class="col">
+        <h5>Challenge your friends to a Wordle of your own creation!</h5>
+        <p id="custom-wordle-text">
+          <label for="custom-wordle">Custom Wordle:</label>
+          <input type="text" id="custom-wordle"></input>
+          <span id="custom-wordle-share-text"></span>
+          <button class="btn btn-primary btn-lg bottom-button" id="custom-wordle-copy-clipboard">Copy to Clipboard</button>
+        </p>
+        <button class="btn btn-primary btn-lg bottom-button" id="custom-wordle-submit-button" onclick="clickSubmit();">Enter</button>
+        <button type="button" class="btn btn-secondary btn-lg bottom-button" onclick="toggleCustom();">Close</button>
       </div>
     </div>
     <div class="row" id="about">
       <div class="col">
         <!-- <h3>Welcome to the Wordle Helper!</h3> -->
         <h5>What does the Wordle Helper do?</h5>
-        <p>For any <a href="https://www.powerlanguage.co.uk/wordle/" target="_blank" rel="noopener noreferrer">Wordle</a> that's been published to date, this Wordle Helper provides what it considers to be the top suggestions for your next guess.</p>
+        <p>For any <a href="https://www.powerlanguage.co.uk/wordle/" target="_blank" rel="noopener noreferrer">Wordle</a> that's been published to date (or any you create on your own), this Wordle Helper provides what it considers to be the top suggestions for your next guess.</p>
         <h5>What is it for?</h5>
         <ul>
+          <li>Want to make your own Wordle to share with your friends?</li>
           <li>Got stuck on today's Wordle and need help making your next guess?</li>
           <li>Want to learn better Wordle strategy?</li>
           <li>Wish you could make more than just 6 guesses?</li>
@@ -72,7 +87,7 @@
         </ul>
         <h5>Author</h5>
         <p>The Wordle Helper was written by Doug Issichopoulos (<a href="https://www.dougissi.com" target="_blank" rel="noopener noreferrer">dougissi.com</a>) in late January 2022.</p>
-        <button type="button" class="btn btn-secondary btn-lg" id="close-about-button" onclick="toggleAbout();">Close</button>
+        <button type="button" class="btn btn-secondary btn-lg bottom-button" onclick="toggleAbout();">Close</button>
       </div>
     </div>
   </div>
@@ -80,7 +95,9 @@
   <!-- main content -->
   <div class="container-fluid" id="main-content">
     <div class="row">
-      <div class="col-lg-4 text-center" id="date-box"></div>
+      <div class="col-lg-4 text-center" id="date-box">
+        <button type="button" class="btn btn-primary btn-lg" id="wordle-by-date-button">Play Wordles By Date</button>
+      </div>
       <div class="col-lg-4" id="guesses">
         <div class="letter-tiles-grid">
         </div>
@@ -154,10 +171,8 @@
     <div class="col-lg-3"></div>
   </div>
 
-
-
   <!-- hidden google sheets form -->
-  <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+  <iframe name="hidden_iframe" id="hidden_iframe"></iframe>
   <form class="hidden-form" id="guess-result-form" action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSf_qogYPKORE_gsr_--EXVx_sHYR3UFZkI63bVA1uWKlGRQiQ/formResponse" method="post" target="hidden_iframe">
     <label>Game Date</label>
     <input type="text" id="guess-form-game-date" name="entry.670048614"></input>
@@ -173,6 +188,8 @@
     <input type="text" id="guess-form-suggested" name="entry.981218756">
     <label>Suggestions Visible</label>
     <input type="text" id="guess-form-suggestions-visible" name="entry.512252507">
+    <label>Custom Word</label>
+    <input type="text" id="guess-form-custom-word" name="entry.1014619338">
     <button type="submit" id="guess-form-submit-button">Send</button>
   </form>
 
@@ -181,6 +198,7 @@
   <script src="assets/xGp9Bi.js" charset="utf-8"></script>
   <script src="assets/fLE0b4w.js" charset="utf-8"></script>
   <script src="assets/KdTX.js" charset="utf-8"></script>
+  <script src="assets/ntT71.js" charset="utf-8"></script>
   <script src="wordle-helper.js" charset="utf-8"></script>
 </body>
 

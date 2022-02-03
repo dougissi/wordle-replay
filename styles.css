@@ -26,11 +26,11 @@ h1 {
   text-transform: uppercase;
 }
 
-#about {
+#about, #custom, #wordle-by-date-button, #custom-wordle-copy-clipboard, .hidden-form, #hidden_iframe {
   display: none;
 }
 
-#close-about-button {
+.bottom-button {
   margin-bottom: 5px;
 }
 
@@ -42,7 +42,7 @@ h1 {
   font-size: 1.5rem;
 }
 
-#bad-date-message {
+.bad-message {
   color: red;
 }
 
