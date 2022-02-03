@@ -3,7 +3,6 @@ const today = getDateToday();
 const earliestDate = "2021-06-19";
 let date = today;
 const urlDate = getURLDateParam();
-console.log(isValidDate(urlDate));
 if (isValidDate(urlDate)) {
   date = urlDate;
 }
@@ -720,13 +719,17 @@ function endGame(verdict) {
 
 // when copy to clipboard button clicked
 $(document).on("click", "#copy-to-clipboard-button", function() {
-  let shareText = `Wordle date: ${date}\nGuesses: ${round}\n\n${guessIconsByRound.join("\n")}\n\nhttps://dougissi.com/wordle-helper?date=${date}`;
+  let shareText = `Wordle date: ${date}\nGuesses: ${round}\n\n${guessIconsByRound.join("\n")}\n\ndougissi.com/wordle-helper?date=${date}`;
   navigator.clipboard.writeText(shareText);
+  $("#copy-to-clipboard-button").css("color", "white");
+  $("#copy-to-clipboard-button").css("background-color", "green");
+  $("#copy-to-clipboard-button").text("Copied! ✔");
+  setTimeout(function () {
+    $("#copy-to-clipboard-button").css("color", "initial");
+    $("#copy-to-clipboard-button").css("background-color", "initial");
+    $("#copy-to-clipboard-button").text("Copy to Clipboard");
+  }, 2000);
   $("#copy-to-clipboard-button").blur();
-  if (date == "2022-01-20") {
-    console.log("test date");
-    $("meta[property='og:image:url']").attr("content", "https://www.dougissi.com/wordle-helper/assets/images/date_share_icons/wordle-helper-2022-01-20.png")
-  }
 })
 
 // when play again? button is clicked
@@ -743,7 +746,6 @@ $(document).on("click", ".continue", function() {
 })
 
 function isValidDate(newDate) {
-  console.log(newDate);
   if (!newDate | newDate < earliestDate | newDate > today) {
     return false;
   }
