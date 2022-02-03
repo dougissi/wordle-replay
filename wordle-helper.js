@@ -2,6 +2,11 @@
 const today = getDateToday();
 const earliestDate = "2021-06-19";
 let date = today;
+const urlDate = getURLDateParam();
+console.log(isValidDate(urlDate));
+if (isValidDate(urlDate)) {
+  date = urlDate;
+}
 let numLetters = 5;
 let round = null;
 let validWords = null;
@@ -85,6 +90,17 @@ function getDateToday() {
   return today;
 }
 
+function getURLDateParam() {
+  const queryString = window.location.search;
+  if (queryString) {
+    const urlParams = new URLSearchParams(queryString);
+    const specificDate = urlParams.get("date");
+    if (specificDate) {
+      return specificDate;
+    }
+  }
+}
+
 function getCSSVariable(name) {
   return getComputedStyle(document.documentElement).getPropertyValue(`--${name}`);
 }
@@ -103,7 +119,7 @@ function getOOO() {
 }
 
 function buildDateSelector() {
-  let dateSelectorHTML = `<label class="date-selector" for="date-selector-button">Wordle date:</label>\n<input type="date" class="date-selector" id="date-selector-button" value="${today}" min="${earliestDate}" max="${today}" onchange="dateChange();">`;
+  let dateSelectorHTML = `<label class="date-selector" for="date-selector-button">Wordle date:</label>\n<input type="date" class="date-selector" id="date-selector-button" value="${date}" min="${earliestDate}" max="${today}" onchange="dateChange();">`;
   $("#date-box").append(dateSelectorHTML);
 }
 
@@ -704,9 +720,13 @@ function endGame(verdict) {
 
 // when copy to clipboard button clicked
 $(document).on("click", "#copy-to-clipboard-button", function() {
-  let shareText = `Wordle date: ${date}\nGuesses: ${round}\n\n${guessIconsByRound.join("\n")}\n\nhttps://dougissi.com/wordle-helper`;
+  let shareText = `Wordle date: ${date}\nGuesses: ${round}\n\n${guessIconsByRound.join("\n")}\n\nhttps://dougissi.com/wordle-helper?date=${date}`;
   navigator.clipboard.writeText(shareText);
   $("#copy-to-clipboard-button").blur();
+  if (date == "2022-01-20") {
+    console.log("test date");
+    $("meta[property='og:image:url']").attr("content", "https://www.dougissi.com/wordle-helper/assets/images/date_share_icons/wordle-helper-2022-01-20.png")
+  }
 })
 
 // when play again? button is clicked
@@ -722,14 +742,22 @@ $(document).on("click", ".continue", function() {
   $("#date-selector-button").prop("disabled", false);
 })
 
+function isValidDate(newDate) {
+  console.log(newDate);
+  if (!newDate | newDate < earliestDate | newDate > today) {
+    return false;
+  }
+  return true;
+}
+
 function dateChange() {
-  let newDate = $("#date-selector-button").val();
+  const newDate = $("#date-selector-button").val();
   $("#bad-date-message").remove();  // if present
   $("#date-selector-button").blur();  // remove focus from date selector; prevent keyboard event interference
-  if (!newDate | newDate < earliestDate | newDate > today) {
-    $("#date-box").append(`<p id="bad-date-message">Invalid date; still using ${date}<p>`);
-  } else {
+  if (isValidDate(newDate)) {
     date = newDate;
     restartGame();
+  } else {
+    $("#date-box").append(`<p id="bad-date-message">Invalid date; still using ${date}<p>`);
   }
 }
