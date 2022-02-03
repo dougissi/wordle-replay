@@ -2,7 +2,8 @@
 const today = getDateToday();
 const earliestDate = "2021-06-19";
 let date = today;
-const urlDate = getURLDateParam();
+const urlParams = getURLParams();
+const urlDate = urlParams.get("date");
 if (isValidDate(urlDate)) {
   date = urlDate;
 }
@@ -21,6 +22,9 @@ let guess = null;
 let guessIconsByRound = [];
 let guessResultsByPosition = null;
 let ooo = null;
+let customOOO = null;
+let customShareLink = null;
+
 const defaultNumTries = 6;
 const greenRGB = getCSSVariable("green");
 const yellowRGB = getCSSVariable("yellow");
@@ -73,11 +77,10 @@ class MapWithDefault extends Map {
   }
 }
 
-
-
 $("#suggestions").hide();
 buildDateSelector();
 startGame();
+seeIfCustomWordle();
 
 
 
@@ -89,14 +92,25 @@ function getDateToday() {
   return today;
 }
 
-function getURLDateParam() {
+function getURLParams() {
   const queryString = window.location.search;
   if (queryString) {
-    const urlParams = new URLSearchParams(queryString);
-    const specificDate = urlParams.get("date");
-    if (specificDate) {
-      return specificDate;
+    return new URLSearchParams(queryString);
+  }
+  return new Map();
+}
+
+function seeIfCustomWordle() {
+  const encryptedCustom = urlParams.get("custom");
+  if (encryptedCustom) {
+    let customLetters = [];
+    for (let i = 0; i < numLetters; i++) {
+      let letter = encryptedCustom[i];
+      customLetters.push(xxxCustom.get(i).get(letter));
     }
+    customOOO = customLetters.join("");
+    $("#custom-wordle").val(customOOO);
+    $("#custom-wordle-submit-button").click();
   }
 }
 
@@ -148,7 +162,11 @@ function startGame() {
   for (let i = 0; i < numLetters; i++) {
     guessResultsByPosition.push(null);
   }
-  ooo = getOOO();
+  if (customOOO) {
+    ooo = customOOO;
+  } else {
+    ooo = getOOO();
+  }
 
   validWords = wordleAcceptableWords;
   updateValidWordsText();
@@ -574,13 +592,19 @@ function submitGuessResult(guessResult) {
     suggested = "true";
   }
 
-  $("#guess-form-game-date").val(date);
+  let dateVal = date;
+  if (customOOO) {
+    dateVal = "custom";
+  }
+
+  $("#guess-form-game-date").val(dateVal);
   $("#guess-form-client-ip").val(clientIP);
   $("#guess-form-round").val(round);
   $("#guess-form-guess-word").val(guess);
   $("#guess-form-result").val(guessResult);
   $("#guess-form-suggested").val(suggested);
   $("#guess-form-suggestions-visible").val(suggestionsVisible);
+  $("#guess-form-custom-word").val(customOOO);
   $("#guess-form-submit-button").click();
 }
 
@@ -608,7 +632,9 @@ function keyActions(key, keyCode) {
         }
       }
     } else if (keyCode == 13) { // key is enter
-      if (ownWord.length == numLetters) {
+      if ($("#custom").is(":visible")) {
+        $("#custom-wordle-submit-button").click();
+      } else if (ownWord.length == numLetters) {
         if (wordleAcceptableWords.has(ownWord)) {
           guess = ownWord;
           processGuess();
@@ -624,7 +650,7 @@ function keyActions(key, keyCode) {
 
 // when key is pressed
 $(document).on("keydown", function(event) {
-  const key = event.key;
+  const key = event.key.toLowerCase();
   const keyCode = event.keyCode;
   keyActions(key, keyCode);
 })
@@ -696,11 +722,17 @@ $("#suggestions-button").click( function() {
 
 function toggleAbout() {
   $("#about").toggle();
+  $("#about-button").blur();
+}
+
+function toggleCustom() {
+  $("#custom").toggle();
+  $("#custom-button").blur();
 }
 
 $("#restart-button").click( function() {
   $(this).blur();
-  restartGame();
+  restartGame(ooo);
 })
 
 function endGame(verdict) {
@@ -717,26 +749,49 @@ function endGame(verdict) {
   $("#date-selector-button").prop("disabled", true);
 }
 
+function getShareLink() {
+  let shareLink = "dougissi.com/wordle-helper?";
+  if (customOOO) {
+    let encryptedLetters = [];
+    for (let i = 0; i < numLetters; i++) {
+      let letter = customOOO[i];
+      encryptedLetters.push(customXXX.get(i).get(letter));
+    }
+    const encryptedCustom = encryptedLetters.join("");
+    shareLink += `custom=${encryptedCustom}`;
+  } else {
+    shareLink += `date=${date}`;
+  }
+  return shareLink;
+}
+
+function animateCopy(element) {
+  element.css("background-color", "green");
+  element.text("Copied! ✔");
+  setTimeout(function () {
+    element.css("background-color", "#0B5ED7");
+    element.text("Copy to Clipboard");
+  }, 2000);
+  element.blur();
+}
+
 // when copy to clipboard button clicked
 $(document).on("click", "#copy-to-clipboard-button", function() {
-  let shareText = `Wordle date: ${date}\nGuesses: ${round}\n\n${guessIconsByRound.join("\n")}\n\ndougissi.com/wordle-helper?date=${date}`;
+  let shareLink = getShareLink();
+  let dateText = date;
+  if (customOOO) {
+    dateText = "custom"
+  }
+  let shareText = `Wordle: ${dateText}\nGuesses: ${round}\n\n${guessIconsByRound.join("\n")}\n\n${shareLink}`;
   navigator.clipboard.writeText(shareText);
-  $("#copy-to-clipboard-button").css("color", "white");
-  $("#copy-to-clipboard-button").css("background-color", "green");
-  $("#copy-to-clipboard-button").text("Copied! ✔");
-  setTimeout(function () {
-    $("#copy-to-clipboard-button").css("color", "initial");
-    $("#copy-to-clipboard-button").css("background-color", "initial");
-    $("#copy-to-clipboard-button").text("Copy to Clipboard");
-  }, 2000);
-  $("#copy-to-clipboard-button").blur();
+  animateCopy($("#copy-to-clipboard-button"));
 })
 
 // when play again? button is clicked
 $(document).on("click", ".play-again", function() {
   $(".overlay").remove();
   $("#date-selector-button").prop("disabled", false);
-  restartGame();
+  restartGame(ooo);
 })
 
 // when continue button is clicked
@@ -760,6 +815,43 @@ function dateChange() {
     date = newDate;
     restartGame();
   } else {
-    $("#date-box").append(`<p id="bad-date-message">Invalid date; still using ${date}<p>`);
+    $("#date-box").append(`<p id="bad-date-message" class="bad-message">Invalid date; still using ${date}<p>`);
   }
 }
+
+function clickSubmit() {
+  let newOoo = $("#custom-wordle").val().toLowerCase();
+  if (wordleAcceptableWords.has(newOoo)) {
+    customOOO = newOoo;
+    restartGame();
+    $("#custom-wordle").val("");
+    $("#custom-wordle-submit-button").hide();
+
+    customShareLink = getShareLink();
+    const shareLinkHTMLText = `Share link: <a href="${"https://" + customShareLink}" target="_blank" rel="noopener noreferrer">${customShareLink}</a>`
+    $("#custom-wordle-share-text").html(shareLinkHTMLText);
+    $("#custom-wordle-copy-clipboard").show();
+
+    // clear and hide date selector
+    $(".date-selector").hide()
+    $("#wordle-by-date-button").show();
+  } else {
+    // display invalid word message
+    $("#custom-wordle-text").append(`<span id="bad-custom-word" class="bad-message">Word not in Wordle word list; try another<span>`);
+    setTimeout(function () {
+      $("#bad-custom-word").remove();
+    }, 2000);
+  }
+}
+
+$("#wordle-by-date-button").click( function() {
+  $("#wordle-by-date-button").hide();
+  $(".date-selector").show()
+  customOOO = null;
+  restartGame();
+})
+
+$("#custom-wordle-copy-clipboard").click( function() {
+  navigator.clipboard.writeText(customShareLink);
+  animateCopy($("#custom-wordle-copy-clipboard"));
+})
