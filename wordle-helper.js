@@ -831,7 +831,7 @@ function clickSubmit() {
     $("#custom-wordle-submit-button").hide();
 
     customShareLink = getShareLink();
-    const shareLinkHTMLText = `Share link: <a href="${"https://" + customShareLink}" target="_blank" rel="noopener noreferrer">${customShareLink}</a>`
+    const shareLinkHTMLText = `Custom word set; now you can play your own Wordle!<br>Share the following link with family and friends to see if they can guess your word:<br><br><a href="${"https://" + customShareLink}" target="_blank" rel="noopener noreferrer">${customShareLink}</a>`
     $("#custom-wordle-share-text").html(shareLinkHTMLText);
     $("#custom-wordle-copy-clipboard").show();
 
@@ -841,6 +841,9 @@ function clickSubmit() {
   } else {
     // display invalid word message
     $("#custom-wordle-text").append(`<span id="bad-custom-word" class="bad-message">Word not in Wordle word list; try another<span>`);
+    // remove any previous custom word link
+    $("#custom-wordle-share-text").html("");
+    $("#custom-wordle-copy-clipboard").hide();
     setTimeout(function () {
       $("#bad-custom-word").remove();
     }, 2000);
