@@ -723,11 +723,13 @@ $("#suggestions-button").click( function() {
 function toggleAbout() {
   $("#about").toggle();
   $("#about-button").blur();
+  $("#custom").hide();
 }
 
 function toggleCustom() {
   $("#custom").toggle();
   $("#custom-button").blur();
+  $("#about").hide();
 }
 
 $("#restart-button").click( function() {
@@ -750,7 +752,7 @@ function endGame(verdict) {
 }
 
 function getShareLink() {
-  let shareLink = "wordlerelay.com?";
+  let shareLink = "wordlereplay.com/?";
   if (customOOO) {
     let encryptedLetters = [];
     for (let i = 0; i < numLetters; i++) {
