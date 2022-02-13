@@ -750,7 +750,7 @@ function endGame(verdict) {
 }
 
 function getShareLink() {
-  let shareLink = "dougissi.com/wordle-helper?";
+  let shareLink = "wordlerelay.com?";
   if (customOOO) {
     let encryptedLetters = [];
     for (let i = 0; i < numLetters; i++) {
