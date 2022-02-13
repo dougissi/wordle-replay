@@ -766,10 +766,11 @@ function getShareLink() {
 }
 
 function animateCopy(element) {
+  let origBackgroundColor = element.css("background-color");
   element.css("background-color", "green");
   element.text("Copied! ✔");
   setTimeout(function () {
-    element.css("background-color", "#0B5ED7");
+    element.css("background-color", origBackgroundColor);
     element.text("Copy to Clipboard");
   }, 2000);
   element.blur();
