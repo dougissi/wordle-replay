@@ -608,14 +608,12 @@ function submitGuessResult(guessResult) {
   $("#guess-form-submit-button").click();
 }
 
-
-
 function keyActions(key, keyCode) {
   if ($(".overlay").length) {  // overlay exists
-    if (keyCode == 13) {
+    if (keyCode == 13 | keyCode == 8) {  // key is enter or delete
       $(".overlay-button").click();
     }
-  } else {
+  } else {  // no overlay
     if (keyCode >= 65 & keyCode <= 90) { // key is letter A - Z
       if (ownWordIndex < numLetters) {
         addLetterToTile(key.toLowerCase(), ownWordIndex);
@@ -639,8 +637,8 @@ function keyActions(key, keyCode) {
           guess = ownWord;
           processGuess();
         } else {
-          let invalidWordOverlay = `<div class="overlay"><h2>"${ownWord}" not in Wordle word list</h2><p>Please enter a different word.</p><button class="btn btn-primary overlay-button continue">Continue</button></div>`
-          $(invalidWordOverlay).insertBefore($("#main-content"));
+          let invalidWordOverlay = `<div class="overlay invalid-word"><h2>"${ownWord}" not in Wordle word list</h2><p>Please enter a different word.</p><button class="btn btn-primary overlay-button continue">Continue</button></div>`
+          $("#main-content").prepend(invalidWordOverlay);
           $("#date-selector-button").prop("disabled", true);
         }
       }
@@ -729,6 +727,7 @@ function toggleAbout() {
 function toggleCustom() {
   $("#custom").toggle();
   $("#custom-button").blur();
+  $("#custom-wordle").select();
   $("#about").hide();
 }
 
@@ -746,8 +745,8 @@ function endGame(verdict) {
   } else {
     throw "verdict can only be 'won' or 'lost'";
   }
-  let endgameOverlay = `<div class="overlay"><h2>${header}</h2><p id="guessIcons">${guessIconsByRound.join("<br>")}<br><button class="btn btn-secondary" id="copy-to-clipboard-button">Copy to Clipboard</button></p><p>Want to play again?</p><p>Remember: you can also play Wordle from any date in the past.</p><button class="btn btn-primary overlay-button play-again">Let's go</button></div>`;
-  $(endgameOverlay).insertBefore($("#main-content"));
+  let endgameOverlay = `<div class="overlay"><h2>${header}</h2><p id="guessIcons">${guessIconsByRound.join("<br>")}<br><button class="btn btn-secondary" id="copy-to-clipboard-button">Copy to Clipboard</button></p><p>Want to play again?</p><p>Remember: you can also play Wordle from any date in the past.</p><button class="btn btn-primary overlay-button play-again">Play again</button></div>`;
+  $("#date-box").append(endgameOverlay);
   $("#date-selector-button").prop("disabled", true);
 }
 
@@ -838,6 +837,8 @@ function clickSubmit() {
     // clear and hide date selector
     $(".date-selector").hide()
     $("#wordle-by-date-button").show();
+
+    $("#custom-wordle").blur();
   } else {
     // display invalid word message
     $("#custom-wordle-text").append(`<span id="bad-custom-word" class="bad-message">Word not in Wordle word list; try another<span>`);
