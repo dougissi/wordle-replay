@@ -150,13 +150,13 @@ function getOOO() {
 }
 
 function buildDateSelector() {
-  let dateSelectorHTML = `<label class="date-selector" for="date-selector-button">Wordle date:</label>\n<input type="date" class="date-selector" id="date-selector-button" value="${date}" min="${earliestDate}" max="${today}" onchange="dateChange();">`;
+  let dateSelectorHTML = `<label class="date-selector main-input" for="date-selector-button">Wordle date:</label>\n<input type="date" class="date-selector" id="date-selector-button" value="${date}" min="${earliestDate}" max="${today}" onchange="dateChange();">`;
   let puzzleNumberLinksHTML = "";
   for (let i = maxPuzzleNumber; i >= 0; i--) {
     puzzleNumberLinksHTML += `<a href="#" onclick="puzzleNumberChange(${i});">${i}</a>`
   }
   let puzzleNumberDropdownHTML = `<div class="dropdown">
-    <button class="btn btn-primary btn-lg dropbtn" id="puzzle-selector-button">#${maxPuzzleNumber}</button>
+    <button class="btn btn-primary btn-lg dropbtn main-input" id="puzzle-selector-button">#${maxPuzzleNumber}</button>
     <div class="dropdown-content">${puzzleNumberLinksHTML}</div>
   </div>`
 
@@ -667,7 +667,7 @@ function keyActions(key, keyCode) {
         } else {
           let invalidWordOverlay = `<div class="overlay invalid-word"><h2>"${ownWord}" not in Wordle word list</h2><p>Please enter a different word.</p><button class="btn btn-primary overlay-button continue">Continue</button></div>`
           $("#main-content").prepend(invalidWordOverlay);
-          $("#date-selector-button").prop("disabled", true);
+          disableMainInputs();
         }
       }
     }
@@ -775,7 +775,15 @@ function endGame(verdict) {
   }
   let endgameOverlay = `<div class="overlay"><h2>${header}</h2><p id="guessIcons">${guessIconsByRound.join("<br>")}<br><button class="btn btn-secondary" id="copy-to-clipboard-button">Copy to Clipboard</button></p><p>Want to play again?</p><p>Remember: you can also play Wordle from any date in the past.</p><button class="btn btn-primary overlay-button play-again">Play again</button></div>`;
   $("#date-box").append(endgameOverlay);
-  $("#date-selector-button").prop("disabled", true);
+  disableMainInputs();
+}
+
+function disableMainInputs() {
+  $(".main-input").prop("disabled", true);
+}
+
+function enableMainInputs() {
+  $(".main-input").prop("disabled", false);
 }
 
 function getShareLink() {
@@ -820,14 +828,14 @@ $(document).on("click", "#copy-to-clipboard-button", function() {
 // when play again? button is clicked
 $(document).on("click", ".play-again", function() {
   $(".overlay").remove();
-  $("#date-selector-button").prop("disabled", false);
+  enableMainInputs();
   restartGame(ooo);
 })
 
 // when continue button is clicked
 $(document).on("click", ".continue", function() {
   $(".overlay").remove();
-  $("#date-selector-button").prop("disabled", false);
+  enableMainInputs();
 })
 
 function isValidDate(newDate) {
