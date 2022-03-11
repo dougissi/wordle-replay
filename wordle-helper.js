@@ -854,6 +854,7 @@ function dateChange() {
 // when puzzle number selector clicked
 $(document).on("click", "#puzzle-selector-button", function () {
   $(".dropdown-content").toggle();
+  $(this).blur();
 })
 
 function puzzleNumberChange(puzzleNumber) {
