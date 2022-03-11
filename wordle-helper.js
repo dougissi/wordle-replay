@@ -1,7 +1,9 @@
 // Global variables
 const today = getDateToday();
 const earliestDate = "2021-06-19";
+const maxPuzzleNumber = convertDateToPuzzleNumber(today);
 let date = today;
+let currentPuzzleNumber = maxPuzzleNumber;
 const urlParams = getURLParams();
 const urlDate = urlParams.get("date");
 if (isValidDate(urlDate)) {
@@ -88,8 +90,24 @@ function getDateToday() {
   let today = new Date();
   const offset = today.getTimezoneOffset();
   today = new Date(today.getTime() - (offset * 60 * 1000));
-  today = today.toISOString().split("T")[0];
-  return today;
+  return convertDateToString(today)
+}
+
+function convertDateToString(dateObj) {
+  dateStr = dateObj.toISOString().split("T")[0];
+  return dateStr;
+}
+
+function convertDateToPuzzleNumber(datestr) {
+  return (new Date(datestr) - new Date(earliestDate)) / (1000 * 60 * 60 * 24);
+}
+
+function convertPuzzleNumberToDate(puzzleNumber) {
+  puzzleDate = new Date(earliestDate);  // initialize
+  const offset = puzzleDate.getTimezoneOffset();
+  puzzleDate.setTime(puzzleDate.getTime() + (offset * 60 * 1000))
+  puzzleDate.setDate(puzzleDate.getDate() + puzzleNumber);
+  return convertDateToString(puzzleDate)
 }
 
 function getURLParams() {
@@ -133,7 +151,17 @@ function getOOO() {
 
 function buildDateSelector() {
   let dateSelectorHTML = `<label class="date-selector" for="date-selector-button">Wordle date:</label>\n<input type="date" class="date-selector" id="date-selector-button" value="${date}" min="${earliestDate}" max="${today}" onchange="dateChange();">`;
+  let puzzleNumberLinksHTML = "";
+  for (let i = maxPuzzleNumber; i >= 0; i--) {
+    puzzleNumberLinksHTML += `<a href="#" onclick="puzzleNumberChange(${i});">${i}</a>`
+  }
+  let puzzleNumberDropdownHTML = `<div class="dropdown">
+    <button class="btn btn-primary btn-lg dropbtn" id="puzzle-selector-button">#${maxPuzzleNumber}</button>
+    <div class="dropdown-content">${puzzleNumberLinksHTML}</div>
+  </div>`
+
   $("#date-box").append(dateSelectorHTML);
+  $("#date-box").append(puzzleNumberDropdownHTML);
 }
 
 function addEmptyGuessRows() {
@@ -784,7 +812,7 @@ $(document).on("click", "#copy-to-clipboard-button", function() {
   if (customOOO) {
     dateText = "custom"
   }
-  let shareText = `Wordle: ${dateText}\nGuesses: ${round}\n\n${guessIconsByRound.join("\n")}\n\n${shareLink}`;
+  let shareText = `Wordle #${currentPuzzleNumber} ${dateText}\nGuesses: ${round}\n\n${guessIconsByRound.join("\n")}\n\n${shareLink}`;
   navigator.clipboard.writeText(shareText);
   animateCopy($("#copy-to-clipboard-button"));
 })
@@ -815,10 +843,28 @@ function dateChange() {
   $("#date-selector-button").blur();  // remove focus from date selector; prevent keyboard event interference
   if (isValidDate(newDate)) {
     date = newDate;
+    currentPuzzleNumber = convertDateToPuzzleNumber(date);
+    $("#puzzle-selector-button").text(`#${currentPuzzleNumber}`)
     restartGame();
   } else {
     $("#date-box").append(`<p id="bad-date-message" class="bad-message">Invalid date; still using ${date}<p>`);
   }
+}
+
+// when puzzle number selector clicked
+$(document).on("click", "#puzzle-selector-button", function () {
+  $(".dropdown-content").toggle();
+})
+
+function puzzleNumberChange(puzzleNumber) {
+  if (puzzleNumber > maxPuzzleNumber) {
+    return
+  }
+  const newDate = convertPuzzleNumberToDate(puzzleNumber);
+  $("#date-selector-button").val(newDate);
+  $("#puzzle-selector-button").text(`#${puzzleNumber}`)
+  $("#puzzle-selector-button").click();
+  dateChange();
 }
 
 function clickSubmit() {
@@ -834,8 +880,9 @@ function clickSubmit() {
     $("#custom-wordle-share-text").html(shareLinkHTMLText);
     $("#custom-wordle-copy-clipboard").show();
 
-    // clear and hide date selector
+    // clear and hide date/number selector
     $(".date-selector").hide()
+    $(".dropdown").hide()
     $("#wordle-by-date-button").show();
 
     $("#custom-wordle").blur();
@@ -853,7 +900,8 @@ function clickSubmit() {
 
 $("#wordle-by-date-button").click( function() {
   $("#wordle-by-date-button").hide();
-  $(".date-selector").show()
+  $(".date-selector").show();
+  $(".dropdown").show();
   customOOO = null;
   restartGame();
 })
