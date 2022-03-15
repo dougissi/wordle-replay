@@ -767,13 +767,40 @@ $("#restart-button").click( function() {
 function endGame(verdict) {
   let header = null;
   if (verdict == "won") {
-    header = `You found "${ooo}"!`;
+    header = `You found ${ooo.toUpperCase()}!`;
   } else if (verdict == "lost") {
     header = "No answers remain :("
   } else {
     throw "verdict can only be 'won' or 'lost'";
   }
-  let endgameOverlay = `<div class="overlay"><h2>${header}</h2><p id="guessIcons">${guessIconsByRound.join("<br>")}<br><button class="btn btn-secondary" id="copy-to-clipboard-button">Copy to Clipboard</button></p><p>Want to play again?</p><p>Remember: you can also play Wordle from any date in the past.</p><button class="btn btn-primary overlay-button play-again">Play again</button></div>`;
+  let nextDisabled = ""
+  if (currentPuzzleNumber >= maxPuzzleNumber) {
+    nextDisabled = "disabled"
+  }
+  let previousDisabled = ""
+  if (currentPuzzleNumber <= 0) {
+    previousDisabled = "disabled"
+  }
+  let playPreviousButtonHTML = `<button class="btn btn-primary overlay-button" id="play-previous-btn" onclick="playPrevious();" ${previousDisabled}>← Play prior</button>`;
+  let playNextButtonHTML = `<button class="btn btn-primary overlay-button" id="play-next-btn" onclick="playNext();" ${nextDisabled}>Play next →</button>`;
+  if (customOOO) {
+    playPreviousButtonHTML = "";
+    playNextButtonHTML = "";
+  }
+  let endgameOverlay = `
+  <div class="overlay">
+    <h2>${header}</h2>
+    <p id="guessIcons">
+      ${guessIconsByRound.join("<br>")}
+      <br>
+      <button class="btn btn-primary" id="copy-to-clipboard-button">
+        Copy to Clipboard
+      </button>
+    </p>
+    ${playPreviousButtonHTML}
+    <button class="btn btn-secondary overlay-button play-again">Restart</button>
+    ${playNextButtonHTML}
+  </div>`;
   $("#date-box").append(endgameOverlay);
   disableMainInputs();
 }
@@ -816,11 +843,11 @@ function animateCopy(element) {
 // when copy to clipboard button clicked
 $(document).on("click", "#copy-to-clipboard-button", function() {
   let shareLink = getShareLink();
-  let dateText = date;
+  let descText = `#${currentPuzzleNumber} ${date}`;
   if (customOOO) {
-    dateText = "custom"
+    descText = "custom"
   }
-  let shareText = `Wordle #${currentPuzzleNumber} ${dateText}\nGuesses: ${round}\n\n${guessIconsByRound.join("\n")}\n\n${shareLink}`;
+  let shareText = `Wordle: ${descText}\nGuesses: ${round}\n\n${guessIconsByRound.join("\n")}\n\n${shareLink}`;
   navigator.clipboard.writeText(shareText);
   animateCopy($("#copy-to-clipboard-button"));
 })
@@ -872,8 +899,23 @@ function puzzleNumberChange(puzzleNumber) {
   const newDate = convertPuzzleNumberToDate(puzzleNumber);
   $("#date-selector-button").val(newDate);
   $("#puzzle-selector-button").text(`#${puzzleNumber}`)
-  $("#puzzle-selector-button").click();
+  $(".dropdown-content").hide();
   dateChange();
+}
+
+function playNext() {
+  $(".overlay").remove();
+  enableMainInputs();
+  puzzleNumberChange(currentPuzzleNumber + 1);
+}
+
+function playPrevious() {
+  $(".overlay").remove();
+  enableMainInputs();
+  if (currentPuzzleNumber == 0) {
+    return
+  }
+  puzzleNumberChange(currentPuzzleNumber - 1);
 }
 
 function clickSubmit() {
