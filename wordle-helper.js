@@ -850,7 +850,12 @@ $(document).on("click", "#copy-to-clipboard-button", function() {
   }
   let shareText = `Wordle: ${descText}\nGuesses: ${round}\n\n${guessIconsByRound.join("\n")}\n\n${shareLink}`;
   if (navigator.share) {
-    navigator.share(shareText);
+    navigator.share({
+      text: shareText
+    }).then(() => {
+      console.log('Thanks for sharing!');
+    })
+    .catch(console.error);
   } else {
     navigator.clipboard.writeText(shareText);
     animateCopy($("#copy-to-clipboard-button"));
