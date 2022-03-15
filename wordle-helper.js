@@ -787,20 +787,7 @@ function endGame(verdict) {
     playPreviousButtonHTML = "";
     playNextButtonHTML = "";
   }
-  let endgameOverlay = `
-  <div class="overlay">
-    <h2>${header}</h2>
-    <p id="guessIcons">
-      ${guessIconsByRound.join("<br>")}
-      <br>
-      <button class="btn btn-primary" id="copy-to-clipboard-button">
-        Share <img src="assets/images/share.svg">
-      </button>
-    </p>
-    ${playPreviousButtonHTML}
-    <button class="btn btn-secondary overlay-button play-again">Restart</button>
-    ${playNextButtonHTML}
-  </div>`;
+  let endgameOverlay = `<div class="overlay"><h2>${header}</h2><p id="guessIcons">${guessIconsByRound.join("<br>")}<br><button class="btn btn-primary" id="copy-to-clipboard-button">Share <img src="assets/images/share.svg"></button></p>${playPreviousButtonHTML}<button class="btn btn-secondary overlay-button play-again">Restart</button>${playNextButtonHTML}</div>`;
   $("#date-box").append(endgameOverlay);
   disableMainInputs();
 }
