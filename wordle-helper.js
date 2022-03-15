@@ -794,7 +794,7 @@ function endGame(verdict) {
       ${guessIconsByRound.join("<br>")}
       <br>
       <button class="btn btn-primary" id="copy-to-clipboard-button">
-        Copy to Clipboard
+        Share <img src="assets/images/share.svg">
       </button>
     </p>
     ${playPreviousButtonHTML}
@@ -830,12 +830,13 @@ function getShareLink() {
 }
 
 function animateCopy(element) {
-  let origBackgroundColor = element.css("background-color");
+  const origBackgroundColor = element.css("background-color");
+  const origHTML = element.html();
   element.css("background-color", "green");
   element.text("Copied! ✔");
   setTimeout(function () {
     element.css("background-color", origBackgroundColor);
-    element.text("Copy to Clipboard");
+    element.html(origHTML);
   }, 2000);
   element.blur();
 }
@@ -848,8 +849,12 @@ $(document).on("click", "#copy-to-clipboard-button", function() {
     descText = "custom"
   }
   let shareText = `Wordle: ${descText}\nGuesses: ${round}\n\n${guessIconsByRound.join("\n")}\n\n${shareLink}`;
-  navigator.clipboard.writeText(shareText);
-  animateCopy($("#copy-to-clipboard-button"));
+  if (navigator.share) {
+    navigator.share(shareText);
+  } else {
+    navigator.clipboard.writeText(shareText);
+    animateCopy($("#copy-to-clipboard-button"));
+  }
 })
 
 // when play again? button is clicked
