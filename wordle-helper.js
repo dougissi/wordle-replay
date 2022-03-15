@@ -849,6 +849,10 @@ $(document).on("click", "#copy-to-clipboard-button", function() {
     descText = "custom"
   }
   let shareText = `Wordle: ${descText}\nGuesses: ${round}\n\n${guessIconsByRound.join("\n")}\n\n${shareLink}`;
+  shareOrCopyToClipboard(shareText, "copy-to-clipboard-button");
+})
+
+function shareOrCopyToClipboard(shareText, elementId) {
   if (navigator.share) {
     navigator.share({
       text: shareText
@@ -858,9 +862,9 @@ $(document).on("click", "#copy-to-clipboard-button", function() {
     .catch(console.error);
   } else {
     navigator.clipboard.writeText(shareText);
-    animateCopy($("#copy-to-clipboard-button"));
+    animateCopy($(`#${elementId}`));
   }
-})
+}
 
 // when play again? button is clicked
 $(document).on("click", ".play-again", function() {
@@ -968,6 +972,5 @@ $("#wordle-by-date-button").click( function() {
 })
 
 $("#custom-wordle-copy-clipboard").click( function() {
-  navigator.clipboard.writeText(customShareLink);
-  animateCopy($("#custom-wordle-copy-clipboard"));
+  shareOrCopyToClipboard(customShareLink, "custom-wordle-copy-clipboard");
 })
