@@ -26,8 +26,18 @@ h1 {
   text-transform: uppercase;
 }
 
-#about, #custom, #wordle-by-date-button, #custom-wordle-copy-clipboard, .hidden-form, #hidden_iframe {
+#wordle-by-date-button, #custom-wordle-copy-clipboard, #custom-wordle-resubmit-button, .hidden-form, #hidden_iframe {
   display: none;
+}
+
+#about {
+  display: none;
+  touch-action: manipulation;
+}
+
+#custom {
+  display: none;
+  touch-action: manipulation;
 }
 
 .bottom-button {

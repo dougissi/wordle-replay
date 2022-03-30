@@ -641,7 +641,11 @@ function keyActions(key, keyCode) {
     if (keyCode == 13 | keyCode == 8) {  // key is enter or delete
       $(".overlay-button").click();
     }
-  } else {  // no overlay
+  } else if ($("#custom").is(":visible")) {
+    if (keyCode == 13) {
+      $("#custom-wordle-submit-button").click();
+    }
+  } else {  // no overlay or custom pane
     if (keyCode >= 65 & keyCode <= 90) { // key is letter A - Z
       if (ownWordIndex < numLetters) {
         addLetterToTile(key.toLowerCase(), ownWordIndex);
@@ -658,9 +662,7 @@ function keyActions(key, keyCode) {
         }
       }
     } else if (keyCode == 13) { // key is enter
-      if ($("#custom").is(":visible")) {
-        $("#custom-wordle-submit-button").click();
-      } else if (ownWord.length == numLetters) {
+      if (ownWord.length == numLetters) {
         if (wordleAcceptableWords.has(ownWord)) {
           guess = ownWord;
           processGuess();
@@ -925,12 +927,15 @@ function clickSubmit() {
     customOOO = newOoo;
     restartGame();
     $("#custom-wordle").val("");
-    $("#custom-wordle-submit-button").hide();
 
     customShareLink = getShareLink();
-    const shareLinkHTMLText = `Custom word set; now you can play your own Wordle!<br>Share the following link with family and friends to see if they can guess your word:<br><br><a href="${"https://" + customShareLink}" target="_blank" rel="noopener noreferrer">${customShareLink}</a>`
+    const shareLinkHTMLText = `Custom word set! <strong>Press "Close" button</strong> to play your own Wordle!<br><br>Share the following link with family and friends to see if they can guess your word.<br><br><a href="${"https://" + customShareLink}" target="_blank" rel="noopener noreferrer">${customShareLink}</a>`
     $("#custom-wordle-share-text").html(shareLinkHTMLText);
     $("#custom-wordle-copy-clipboard").show();
+
+    // swap which button is primary/secondary
+    $("#custom-wordle-submit-button").addClass("btn-secondary").removeClass("btn-primary");
+    $("#custom-close-button").addClass("btn-primary").removeClass("btn-secondary");
 
     // clear and hide date/number selector
     $(".date-selector").hide()
@@ -938,6 +943,7 @@ function clickSubmit() {
     $("#wordle-by-date-button").show();
 
     $("#custom-wordle").blur();
+    //$("#custom-close-button").focus();
   } else {
     // display invalid word message
     $("#custom-wordle-text").append(`<span id="bad-custom-word" class="bad-message">Word not in Wordle word list; try another<span>`);
