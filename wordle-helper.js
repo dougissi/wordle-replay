@@ -8,6 +8,7 @@ const urlParams = getURLParams();
 const urlDate = urlParams.get("date");
 if (isValidDate(urlDate)) {
   date = urlDate;
+  currentPuzzleNumber = convertDateToPuzzleNumber(date);
 }
 let numLetters = 5;
 let round = null;
@@ -156,7 +157,7 @@ function buildDateSelector() {
     puzzleNumberLinksHTML += `<a href="#" onclick="puzzleNumberChange(${i});">${i}</a>`
   }
   let puzzleNumberDropdownHTML = `<div class="dropdown">
-    <button class="btn btn-primary btn-lg dropbtn main-input" id="puzzle-selector-button">#${maxPuzzleNumber}</button>
+    <button class="btn btn-primary btn-lg dropbtn main-input" id="puzzle-selector-button">#${currentPuzzleNumber}</button>
     <div class="dropdown-content">${puzzleNumberLinksHTML}</div>
   </div>`
 
