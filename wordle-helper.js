@@ -851,7 +851,7 @@ function clickAShareButton(buttonId, guessIconsArr, shareLink = null) {
     descText = "custom"
   }
 
-  let shareText = `Wordle: ${descText}\r\nGuesses: ${round}\r\n\r\n${guessIconsArr.join("\r\n")}\n\n${shareLink}`;
+  let shareText = `Wordle: ${descText}\nGuesses: ${round}\n\n${guessIconsArr.join("\n")}\n\n${shareLink}`;
   shareOrCopyToClipboard(shareText, buttonId);
 }
 
