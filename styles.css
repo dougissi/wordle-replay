@@ -78,7 +78,7 @@ h1 {
   line-height: 1rem;
 }
 
-#copy-to-clipboard-button {
+#copy-to-clipboard-button, #reddit-share-button {
   margin-top: 5px;
 }
 

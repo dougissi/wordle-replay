@@ -22,6 +22,7 @@ let ownWord = null;
 let ownWordIndex = null;
 let topWords = null;
 let guess = null;
+let guesses = [];
 let guessIconsByRound = [];
 let guessResultsByPosition = null;
 let ooo = null;
@@ -186,6 +187,7 @@ function startGame() {
   ownWord = "";
   ownWordIndex = 0;
   guess = null;
+  guesses = [];
   guessIconsByRound = [];
   guessResultsByPosition = [];
   for (let i = 0; i < numLetters; i++) {
@@ -696,6 +698,9 @@ function processGuess() {
   colorGuess(guess, guessResult);
   submitGuessResult(guessResult);
 
+  // store guesses
+  guesses.push(guess)
+
   // guess icons
   let guessIcons = "";
   for (const letterResult of guessResult) {
@@ -790,7 +795,13 @@ function endGame(verdict) {
     playPreviousButtonHTML = "";
     playNextButtonHTML = "";
   }
-  let endgameOverlay = `<div class="overlay"><h2>${header}</h2><p id="guessIcons">${guessIconsByRound.join("<br>")}<br><button class="btn btn-primary" id="copy-to-clipboard-button">Share <img src="assets/images/share.svg"></button></p>${playPreviousButtonHTML}<button class="btn btn-secondary overlay-button play-again">Restart</button>${playNextButtonHTML}</div>`;
+  const shareIconImgTag = '<img src="assets/images/share.svg">'
+  let endgameOverlay = `
+  <div class="overlay"><h2>${header}</h2><p id="guessIcons">${guessIconsByRound.join("<br>")}
+  <br><button class="btn btn-primary" id="copy-to-clipboard-button">Share ${shareIconImgTag}</button>
+  <br><button class="btn btn-primary" id="reddit-share-button">Reddit Spoiler Tags ${shareIconImgTag}</button>
+  </p>${playPreviousButtonHTML}<button class="btn btn-secondary overlay-button play-again">Restart</button>${playNextButtonHTML}</div>
+  `;
   $("#date-box").append(endgameOverlay);
   disableMainInputs();
 }
@@ -831,15 +842,29 @@ function animateCopy(element) {
   element.blur();
 }
 
-// when copy to clipboard button clicked
-$(document).on("click", "#copy-to-clipboard-button", function() {
-  let shareLink = getShareLink();
+function clickAShareButton(buttonId, guessIconsArr, shareLink = null) {
+  if (!shareLink) {
+    shareLink = getShareLink();
+  }
   let descText = `#${currentPuzzleNumber} ${date}`;
   if (customOOO) {
     descText = "custom"
   }
-  let shareText = `Wordle: ${descText}\nGuesses: ${round}\n\n${guessIconsByRound.join("\n")}\n\n${shareLink}`;
-  shareOrCopyToClipboard(shareText, "copy-to-clipboard-button");
+
+  let shareText = `Wordle: ${descText}\r\nGuesses: ${round}\r\n\r\n${guessIconsArr.join("\r\n")}\n\n${shareLink}`;
+  shareOrCopyToClipboard(shareText, buttonId);
+}
+
+// when copy to clipboard button clicked
+$(document).on("click", "#copy-to-clipboard-button", function() {
+  clickAShareButton("copy-to-clipboard-button", guessIconsByRound)
+})
+
+// when reddit share button clicked
+$(document).on("click", "#reddit-share-button", function() {
+  const shareLink = "https://www." + getShareLink();
+  const iconsAndGuesses = guessIconsByRound.map(function(e, i) {return `${e} >!${guesses[i].toUpperCase()}!<`;});
+  clickAShareButton("reddit-share-button", iconsAndGuesses, shareLink)
 })
 
 function shareOrCopyToClipboard(shareText, elementId) {
