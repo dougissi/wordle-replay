@@ -1,4 +1,5 @@
 // Global variables
+let isDarkMode = false;
 const today = getDateToday();
 const earliestDate = "2021-06-19";
 const maxPuzzleNumber = convertDateToPuzzleNumber(today);
@@ -10,7 +11,6 @@ if (isValidDate(urlDate)) {
   date = urlDate;
   currentPuzzleNumber = convertDateToPuzzleNumber(date);
 }
-let isDarkMode = false;
 let numLetters = 5;
 let round = null;
 let validWords = null;
@@ -94,6 +94,11 @@ seeIfCustomWordle();
 
 function getDateToday() {
   let today = new Date();
+  const todayHours = today.getHours();
+  const isDayTime = todayHours > 6 && todayHours < 20;
+  if (!isDayTime) {
+    setToDarkMode();
+  }
   const offset = today.getTimezoneOffset();
   today = new Date(today.getTime() - (offset * 60 * 1000));
   return convertDateToString(today)
@@ -776,6 +781,19 @@ function toggleCustom() {
   $("#about").hide();
 }
 
+function setToDarkMode() {
+  $("body").css("background-color", "var(--darkbackground)");
+  $("body").css("color", "white");
+  $(".button-key").css("background-color", "var(--darkkey)");
+  $(".button-key").css("color", "white");
+  $(".tile").css("border", "var(--darktrue-border)");
+  $("#date-selector-button").css("background-color", "var(--darkbackground)");
+  $("#date-selector-button").css("color", "white");
+  $("#custom-wordle").css("background-color", "var(--darkbackground)");
+  $("#custom-wordle").css("color", "white");
+  isDarkMode = true;
+}
+
 function toggleDarkMode() {
   restartGame();
   if (isDarkMode) {
@@ -790,16 +808,7 @@ function toggleDarkMode() {
     $("#custom-wordle").css("color", "initial");
     isDarkMode = false;
   } else {
-    $("body").css("background-color", "var(--darkbackground)");
-    $("body").css("color", "white");
-    $(".button-key").css("background-color", "var(--darkkey)");
-    $(".button-key").css("color", "white");
-    $(".tile").css("border", "var(--darktrue-border)");
-    $("#date-selector-button").css("background-color", "var(--darkbackground)");
-    $("#date-selector-button").css("color", "white");
-    $("#custom-wordle").css("background-color", "var(--darkbackground)");
-    $("#custom-wordle").css("color", "white");
-    isDarkMode = true;
+    setToDarkMode();
   }
   $("#dark-mode-button").blur();
 }
