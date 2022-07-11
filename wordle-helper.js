@@ -1,5 +1,5 @@
 // Global variables
-let isDarkMode = false;
+const todayRaw = new Date();
 const today = getDateToday();
 const earliestDate = "2021-06-19";
 const maxPuzzleNumber = convertDateToPuzzleNumber(today);
@@ -29,6 +29,7 @@ let guessResultsByPosition = null;
 let ooo = null;
 let customOOO = null;
 let customShareLink = null;
+let isDarkMode = false;
 
 const defaultNumTries = 6;
 const greenRGB = getCSSVariable("green");
@@ -88,20 +89,15 @@ class MapWithDefault extends Map {
 
 $("#suggestions").hide();
 buildDateSelector();
+checkForDarkMode();
 startGame();
 seeIfCustomWordle();
 
 
 function getDateToday() {
-  let today = new Date();
-  const todayHours = today.getHours();
-  const isDayTime = todayHours > 6 && todayHours < 20;
-  if (!isDayTime) {
-    setToDarkMode();
-  }
-  const offset = today.getTimezoneOffset();
-  today = new Date(today.getTime() - (offset * 60 * 1000));
-  return convertDateToString(today)
+  const offset = todayRaw.getTimezoneOffset();
+  todayOffset = new Date(todayRaw.getTime() - (offset * 60 * 1000));
+  return convertDateToString(todayOffset)
 }
 
 function convertDateToString(dateObj) {
@@ -178,6 +174,14 @@ function buildDateSelector() {
 function addEmptyGuessRows() {
   for (let row = 0; row < defaultNumTries; row++) {
     addEmptyTilesRow(row);
+  }
+}
+
+function checkForDarkMode() {
+  const todayHours = todayRaw.getHours();
+  const isDayTime = todayHours > 6 && todayHours < 20;
+  if (!isDayTime) {
+    setToDarkMode();
   }
 }
 
