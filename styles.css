@@ -3,7 +3,16 @@
   --yellow:rgb(201, 180, 88);  /* #c9b458 */
   --gray:rgb(134, 136, 138);  /* #86888a */
   --lightgray:rgb(211, 211, 211);  /* #d3d3d3; */
+  --darkfalse-green:var(--green);
+  --darktrue-green:rgb(83, 141, 78); /* #538d4e */
+  --darkfalse-yellow:var(--yellow);
+  --darktrue-yellow:rgb(181, 159, 59); /* #b59f3b */
+  --darkfalse-gray:var(--gray);
+  --darktrue-gray:rgb(58, 58, 60); /* #3a3a3c */
+  --darkbackground:rgb(18, 18, 19); /* #121213; */
+  --darkkey:rgb(129, 131, 132); /* #818384 */
   --border: 1px solid black;
+  --darktrue-border: 1px solid var(--darktrue-gray);
 }
 
 div {

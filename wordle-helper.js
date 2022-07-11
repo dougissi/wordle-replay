@@ -10,6 +10,7 @@ if (isValidDate(urlDate)) {
   date = urlDate;
   currentPuzzleNumber = convertDateToPuzzleNumber(date);
 }
+let isDarkMode = false;
 let numLetters = 5;
 let round = null;
 let validWords = null;
@@ -34,6 +35,10 @@ const greenRGB = getCSSVariable("green");
 const yellowRGB = getCSSVariable("yellow");
 const grayRGB = getCSSVariable("gray");
 const lightGrayRGB = getCSSVariable("lightgray");
+const darkKeyRGB = getCSSVariable("darkkey");
+const darkGreenRGB = getCSSVariable("darktrue-green");
+const darkYellowRGB = getCSSVariable("darktrue-yellow");
+const darkGrayRGB = getCSSVariable("darktrue-gray");
 const letterToKeyCode = new Map([
   ["q", 81],
   ["w", 87],
@@ -85,7 +90,6 @@ $("#suggestions").hide();
 buildDateSelector();
 startGame();
 seeIfCustomWordle();
-
 
 
 function getDateToday() {
@@ -209,8 +213,13 @@ function startGame() {
 function restartGame() {
   $(".letter-tiles-grid").empty();
   for (const [letter, keyCode] of letterToKeyCode) {
-    $(`#${keyCode}`).css("background-color", "var(--lightgray)");
-    $(`#${keyCode}`).css("color", "initial");
+    if (isDarkMode) {
+      $(`#${keyCode}`).css("background-color", "var(--darkkey)");
+      $(`#${keyCode}`).css("color", "white");
+    } else {
+      $(`#${keyCode}`).css("background-color", "var(--lightgray)");
+      $(`#${keyCode}`).css("color", "initial");
+    }
   }
   startGame();
 }
@@ -586,7 +595,7 @@ function colorGuess(guess, guessResult) {
     }
 
     // color tile
-    $(`#${letterId}`).css("background-color", `var(--${color})`);
+    $(`#${letterId}`).css("background-color", `var(--dark${isDarkMode}-${color})`);
     $(`#${letterId}`).css("color", "white");
     $(`#${letterId}`).css("border", "none");
 
@@ -594,17 +603,17 @@ function colorGuess(guess, guessResult) {
     let keyCode = letterToKeyCode.get(letter);
     let key = $(`#${keyCode}`);
     let keyColor = key.css("background-color");
-    if (keyColor == lightGrayRGB) {
-      key.css("background-color", `var(--${color})`);
+    if (keyColor == lightGrayRGB | keyColor == darkKeyRGB) {
+      key.css("background-color", `var(--dark${isDarkMode}-${color})`);
       key.css("color", "white")
-    } else if (keyColor == grayRGB) {
+    } else if (keyColor == grayRGB | keyColor == darkGrayRGB) {
       if (color == "yellow" | color == "green") {
-        key.css("background-color", `var(--${color})`);
+        key.css("background-color", `var(--dark${isDarkMode}-${color})`);
         key.css("color", "white")
       }
-    } else if (keyColor == yellowRGB) {
+    } else if (keyColor == yellowRGB | keyColor == darkYellowRGB) {
       if (color == "green") {
-        key.css("background-color", `var(--${color})`);
+        key.css("background-color", `var(--dark${isDarkMode}-${color})`);
         key.css("color", "white")
       }
     }
@@ -765,6 +774,34 @@ function toggleCustom() {
   $("#custom-button").blur();
   $("#custom-wordle").select();
   $("#about").hide();
+}
+
+function toggleDarkMode() {
+  restartGame();
+  if (isDarkMode) {
+    $("body").css("background-color", "initial");
+    $("body").css("color", "initial");
+    $(".button-key").css("background-color", "var(--lightgray)");
+    $(".button-key").css("color", "initial");
+    $(".tile").css("border", "var(--border)");
+    $("#date-selector-button").css("background-color", "initial");
+    $("#date-selector-button").css("color", "initial");
+    $("#custom-wordle").css("background-color", "initial");
+    $("#custom-wordle").css("color", "initial");
+    isDarkMode = false;
+  } else {
+    $("body").css("background-color", "var(--darkbackground)");
+    $("body").css("color", "white");
+    $(".button-key").css("background-color", "var(--darkkey)");
+    $(".button-key").css("color", "white");
+    $(".tile").css("border", "var(--darktrue-border)");
+    $("#date-selector-button").css("background-color", "var(--darkbackground)");
+    $("#date-selector-button").css("color", "white");
+    $("#custom-wordle").css("background-color", "var(--darkbackground)");
+    $("#custom-wordle").css("color", "white");
+    isDarkMode = true;
+  }
+  $("#dark-mode-button").blur();
 }
 
 $("#restart-button").click( function() {
