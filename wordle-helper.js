@@ -89,9 +89,9 @@ class MapWithDefault extends Map {
 
 $("#suggestions").hide();
 buildDateSelector();
-checkForDarkMode();
 startGame();
 seeIfCustomWordle();
+checkForDarkMode();
 
 
 function getDateToday() {
@@ -745,6 +745,9 @@ function processGuess() {
   ownWordIndex = 0;
   if (!$(`#row${round - 1}col0`).length) {  // row of tiles for round doesn't exist
     addEmptyTilesRow(round - 1);
+    if (isDarkMode) {
+      $(".tile").css("border", "var(--darktrue-border)")
+    }
   }
 }
 
@@ -791,6 +794,7 @@ function setToDarkMode() {
   $(".button-key").css("background-color", "var(--darkkey)");
   $(".button-key").css("color", "white");
   $(".tile").css("border", "var(--darktrue-border)");
+  $("#header").css("border-bottom", "var(--darktrue-border)")
   $("#date-selector-button").css("background-color", "var(--darkbackground)");
   $("#date-selector-button").css("color", "white");
   $("#custom-wordle").css("background-color", "var(--darkbackground)");
@@ -806,6 +810,7 @@ function toggleDarkMode() {
     $(".button-key").css("background-color", "var(--lightgray)");
     $(".button-key").css("color", "initial");
     $(".tile").css("border", "var(--border)");
+    $("#header").css("border-bottom", "var(--border)")
     $("#date-selector-button").css("background-color", "initial");
     $("#date-selector-button").css("color", "initial");
     $("#custom-wordle").css("background-color", "initial");
