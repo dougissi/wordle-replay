@@ -25,6 +25,7 @@ let topWords = null;
 let guess = null;
 let guesses = [];
 let guessIconsByRound = [];
+let remainingValidWordsByRound = [];
 let guessResultsByPosition = null;
 let ooo = null;
 let customOOO = null;
@@ -202,6 +203,7 @@ function startGame() {
   guess = null;
   guesses = [];
   guessIconsByRound = [];
+  remainingValidWordsByRound = [];
   guessResultsByPosition = [];
   for (let i = 0; i < numLetters; i++) {
     guessResultsByPosition.push(null);
@@ -729,11 +731,16 @@ function processGuess() {
   // check if found final word
   let resultsSet = new Set(guessResult);
   if (resultsSet.size == 1 & resultsSet.has("+")) {
+    remainingValidWordsByRound.push(0);  // no remaining words
     endGame("won");
     return;
   }
 
   evaluateGuessAndGetNextWordOptions(guess, guessResult);
+
+  // store number of valid words remaining after guess
+  remainingValidWordsByRound.push(validWords.size)
+
   buildTopWordsSelector();
   if (validWords.size == 0) {
     endGame("lost");
@@ -918,7 +925,7 @@ $(document).on("click", "#copy-to-clipboard-button", function() {
 // when reddit share button clicked
 $(document).on("click", "#reddit-share-button", function() {
   const shareLink = "https://www." + getShareLink();
-  const iconsAndGuesses = guessIconsByRound.map(function(e, i) {return `${e} >!${guesses[i].toUpperCase()}!<`;});
+  const iconsAndGuesses = guessIconsByRound.map(function(e, i) {return `${e} >!${guesses[i].toUpperCase()}!< (${remainingValidWordsByRound[i]})`.replace("(0)", "");});
   clickAShareButton("reddit-share-button", iconsAndGuesses, shareLink)
 })
 
