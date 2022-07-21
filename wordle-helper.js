@@ -572,6 +572,7 @@ function addEmptyTilesRow(row) {
   }
   let emptyTilesRow = `<div class="row">${tilesHTMLs.join("")}</div>`
   $(".letter-tiles-grid").append(emptyTilesRow);
+  setTileBorder();
 }
 
 function getLetterId(i) {
@@ -659,6 +660,15 @@ function submitGuessResult(guessResult) {
   $("#guess-form-submit-button").click();
 }
 
+function setOverlayBackgroundColor() {
+  $(".overlay").css("background-color", `var(--dark${isDarkMode}-blue)`);
+}
+
+function setTileBorder() {
+  const border = isDarkMode ? "var(--darktrue-border)" : "var(--border)"
+  $(".tile").css("border", border);
+}
+
 function keyActions(key, keyCode) {
   if ($(".overlay").length) {  // overlay exists
     if (keyCode == 13 | keyCode == 8) {  // key is enter or delete
@@ -692,6 +702,7 @@ function keyActions(key, keyCode) {
         } else {
           let invalidWordOverlay = `<div class="overlay invalid-word"><h2>"${ownWord}" not in Wordle word list</h2><p>Please enter a different word.</p><button class="btn btn-primary overlay-button continue">Continue</button></div>`
           $("#main-content").prepend(invalidWordOverlay);
+          setOverlayBackgroundColor();
           disableMainInputs();
         }
       }
@@ -800,7 +811,6 @@ function setToDarkMode() {
   $("body").css("color", "white");
   $(".button-key").css("background-color", "var(--darkkey)");
   $(".button-key").css("color", "white");
-  $(".tile").css("border", "var(--darktrue-border)");
   $("#header").css("border-bottom", "var(--darktrue-border)")
   $("#date-selector-button").css("background-color", "var(--darkbackground)");
   $("#date-selector-button").css("color", "white");
@@ -816,7 +826,6 @@ function toggleDarkMode() {
     $("body").css("color", "initial");
     $(".button-key").css("background-color", "var(--lightgray)");
     $(".button-key").css("color", "initial");
-    $(".tile").css("border", "var(--border)");
     $("#header").css("border-bottom", "var(--border)")
     $("#date-selector-button").css("background-color", "initial");
     $("#date-selector-button").css("color", "initial");
@@ -826,6 +835,8 @@ function toggleDarkMode() {
   } else {
     setToDarkMode();
   }
+  setOverlayBackgroundColor();
+  setTileBorder();
   $("#dark-mode-button").blur();
 }
 
@@ -865,6 +876,7 @@ function endGame(verdict) {
   </p>${playPreviousButtonHTML}<button class="btn btn-secondary overlay-button play-again">Restart</button>${playNextButtonHTML}</div>
   `;
   $("#date-box").append(endgameOverlay);
+  setOverlayBackgroundColor();
   disableMainInputs();
 }
 

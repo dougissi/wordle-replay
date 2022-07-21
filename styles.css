@@ -13,6 +13,8 @@
   --darkkey:rgb(129, 131, 132); /* #818384 */
   --border: 1px solid black;
   --darktrue-border: 1px solid var(--darktrue-gray);
+  --darkfalse-blue:lightsteelblue;
+  --darktrue-blue:rgb(3, 11, 168);
 }
 
 div {
@@ -67,7 +69,6 @@ h1 {
 
 .overlay {
   border: var(--border);
-  background-color: lightsteelblue;
   text-align: center;
   padding: 10px;
   margin: 10px auto;
