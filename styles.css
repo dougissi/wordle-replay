@@ -37,7 +37,7 @@ h1 {
   text-transform: uppercase;
 }
 
-#wordle-by-date-button, #custom-wordle-copy-clipboard, #custom-wordle-resubmit-button, .hidden-form, #hidden_iframe {
+#wordle-by-date-button, #view-answer, #custom-wordle-copy-clipboard, #custom-wordle-resubmit-button, .hidden-form, #hidden_iframe {
   display: none;
 }
 
@@ -63,6 +63,10 @@ h1 {
   font-size: 1.5rem;
 }
 
+.solved {
+  background-color: lightgreen;
+}
+
 .bad-message {
   color: red;
 }
@@ -84,8 +88,12 @@ h1 {
   right: 0;
 }
 
-#guessIcons {
-  line-height: 1rem;
+.dist {
+  margin-bottom: 2%;
+}
+
+.overlay-subheader {
+  font-weight: bold;
 }
 
 #copy-to-clipboard-button, #reddit-share-button {

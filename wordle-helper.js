@@ -9,7 +9,17 @@ const urlParams = getURLParams();
 const urlDate = urlParams.get("date");
 if (isValidDate(urlDate)) {
   date = urlDate;
-  currentPuzzleNumber = convertDateToPuzzleNumber(date);
+  updateCurrentPuzzleNumber();
+}
+const solvedKeyLocalStorage = "wordlereplay-solved";
+let solved = getItemLocalStorage(solvedKeyLocalStorage);
+if (!solved) {
+  solved = {};
+}
+const distKeyLocalStorage = "wordlereplay-dist";
+let dist = getItemLocalStorage(distKeyLocalStorage);
+if (!dist) {
+  dist = {"total": 0};
 }
 let numLetters = 5;
 let round = null;
@@ -89,7 +99,7 @@ class MapWithDefault extends Map {
 }
 
 $("#suggestions").hide();
-buildDateSelector();
+buildDateAndPuzzleNumberSelectors();
 startGame();
 seeIfCustomWordle();
 checkForDarkMode();
@@ -106,6 +116,13 @@ function convertDateToString(dateObj) {
   return dateStr;
 }
 
+function isValidDate(newDate) {
+  if (!newDate | newDate < earliestDate | newDate > today) {
+    return false;
+  }
+  return true;
+}
+
 function convertDateToPuzzleNumber(datestr) {
   return (new Date(datestr) - new Date(earliestDate)) / (1000 * 60 * 60 * 24);
 }
@@ -116,6 +133,10 @@ function convertPuzzleNumberToDate(puzzleNumber) {
   puzzleDate.setTime(puzzleDate.getTime() + (offset * 60 * 1000))
   puzzleDate.setDate(puzzleDate.getDate() + puzzleNumber);
   return convertDateToString(puzzleDate)
+}
+
+function updateCurrentPuzzleNumber() {
+  currentPuzzleNumber = convertDateToPuzzleNumber(date);
 }
 
 function getURLParams() {
@@ -144,6 +165,16 @@ function getCSSVariable(name) {
   return getComputedStyle(document.documentElement).getPropertyValue(`--${name}`);
 }
 
+function getItemLocalStorage(key) {
+  const valueJsonStr = window.localStorage.getItem(key);
+  return JSON.parse(valueJsonStr);
+}
+
+function setItemLocalStorage(key, value) {
+  const valueJsonStr = JSON.stringify(value);
+  return window.localStorage.setItem(key, valueJsonStr);
+}
+
 function getOOO() {
   let xd = "";
   for (const x of date) {
@@ -157,20 +188,52 @@ function getOOO() {
   return o;
 }
 
-function buildDateSelector() {
+function buildDateAndPuzzleNumberSelectors() {
   let dateSelectorHTML = `<label class="date-selector main-input" for="date-selector-button">Wordle date:</label>\n<input type="date" class="date-selector" id="date-selector-button" value="${date}" min="${earliestDate}" max="${today}" onchange="dateChange();">`;
+  
+  // Puzzle Number Drop Down
   let puzzleNumberLinksHTML = "";
   for (let i = maxPuzzleNumber; i >= 0; i--) {
-    puzzleNumberLinksHTML += `<a href="#" onclick="puzzleNumberChange(${i});">${i}</a>`
+    puzzleNumberLinksHTML += `<a ${i in solved ? 'class="solved"' : ""} id="puzzle-dropdown-${i}" href="#" onclick="puzzleNumberChange(${i});">${i}</a>`
   }
   let puzzleNumberDropdownHTML = `<div class="dropdown">
-    <button class="btn btn-primary btn-lg dropbtn main-input" id="puzzle-selector-button">#${currentPuzzleNumber}</button>
+    <button class="btn btn-primary btn-lg dropbtn" id="puzzle-selector-button"></button>
     <div class="dropdown-content">${puzzleNumberLinksHTML}</div>
   </div>`
 
   $("#date-box").append(dateSelectorHTML);
   $("#date-box").append(puzzleNumberDropdownHTML);
+  if (dist.total <= maxPuzzleNumber) {
+    $("#date-box").append(`<button class="btn btn-primary btn-lg" id="play-earliest-unsolved-button" onClick="playEarliestUnsolved()">Earliest Unsolved</button>`)
+  }
+  displayOrHideAnswerButton();
 }
+
+function displayOrHideAnswerButton() {
+  if (currentPuzzleNumber != null && currentPuzzleNumber in solved) {
+    const solvedData = solved[currentPuzzleNumber];
+    const solvedDate = solvedData.solvedDate;
+    const daysAgo = getDaysAgo(solvedDate); 
+    $("#view-answer-text").text(`Solved on ${solvedDate} (${daysAgo} ${daysAgo != 1 ? "days" : "day"} ago) in ${solvedData.guesses.length} ${solvedData.guesses.length != 1 ? "guesses" : "guess"}`);
+    $("#view-answer").show();
+  } else {
+    $("#view-answer").hide();
+  }
+  $("#overwrite-guesses-checkbox").prop("checked", false)  // default: don't overwrite
+}
+
+
+function getDaysAgo(oldDateStr) {
+  oldDate = new Date(oldDateStr);
+  currentDate = new Date(today);
+  const diff = currentDate.getTime() - oldDate.getTime();
+  return diff / (1000 * 3600 * 24);
+}
+
+function isChecked(id) {
+  return $('#' + id).is(":checked");
+}
+
 
 function addEmptyGuessRows() {
   for (let row = 0; row < defaultNumTries; row++) {
@@ -212,6 +275,14 @@ function startGame() {
     ooo = customOOO;
   } else {
     ooo = getOOO();
+    updateCurrentPuzzleNumber();
+    $("#puzzle-selector-button").text(`#${currentPuzzleNumber}`);
+    if (currentPuzzleNumber in solved) {
+      $("#puzzle-selector-button").removeClass("btn-primary").addClass("btn-success");
+    } else {
+      $("#puzzle-selector-button").removeClass("btn-success").addClass("btn-primary");
+    }
+    $("#play-earliest-unsolved-button").show();
   }
 
   validWords = wordleAcceptableWords;
@@ -219,6 +290,7 @@ function startGame() {
   topWords = getNextWordOptions();
   buildTopWordsSelector();
   addEmptyGuessRows();
+  displayOrHideAnswerButton();
 }
 
 function restartGame() {
@@ -232,6 +304,7 @@ function restartGame() {
       $(`#${keyCode}`).css("color", "initial");
     }
   }
+  resume();
   startGame();
 }
 
@@ -665,7 +738,7 @@ function setOverlayBackgroundColor() {
 }
 
 function setTileBorder() {
-  const border = isDarkMode ? "var(--darktrue-border)" : "var(--border)"
+  const border = isDarkMode ? "var(--darktrue-border)" : "var(--border)";
   $(".tile").css("border", border);
 }
 
@@ -724,10 +797,12 @@ $(".button-key").mousedown(function() {
   keyActions(key, keyCode);
 })
 
-function processGuess() {
+function processGuess(submitGuess = true) {
   guessResult = getGuessResult(guess);
   colorGuess(guess, guessResult);
-  submitGuessResult(guessResult);
+  if (submitGuess) {
+    submitGuessResult(guessResult);
+  }
 
   // store guesses
   guesses.push(guess)
@@ -811,7 +886,8 @@ function setToDarkMode() {
   $("body").css("color", "white");
   $(".button-key").css("background-color", "var(--darkkey)");
   $(".button-key").css("color", "white");
-  $("#header").css("border-bottom", "var(--darktrue-border)")
+  $("#header").css("border-bottom", "var(--darktrue-border)");
+  $(".tile").css("border", "var(--darktrue-border");
   $("#date-selector-button").css("background-color", "var(--darkbackground)");
   $("#date-selector-button").css("color", "white");
   $("#custom-wordle").css("background-color", "var(--darkbackground)");
@@ -827,6 +903,7 @@ function toggleDarkMode() {
     $(".button-key").css("background-color", "var(--lightgray)");
     $(".button-key").css("color", "initial");
     $("#header").css("border-bottom", "var(--border)")
+    $(".tile").css("border", "var(--border");
     $("#date-selector-button").css("background-color", "initial");
     $("#date-selector-button").css("color", "initial");
     $("#custom-wordle").css("background-color", "initial");
@@ -836,19 +913,27 @@ function toggleDarkMode() {
     setToDarkMode();
   }
   setOverlayBackgroundColor();
-  setTileBorder();
   $("#dark-mode-button").blur();
 }
 
 $("#restart-button").click( function() {
   $(this).blur();
-  restartGame(ooo);
+  const restartOverlay = `<div class="overlay"><h2>Are you sure you want to restart?</h2><button class="btn btn-primary overlay-button continue">No</button> <button class="btn btn-danger" onClick="restartGame(ooo)">Yes</button></div>`
+  $("#main-content").prepend(restartOverlay);
+  setOverlayBackgroundColor();
+  disableMainInputs();
 })
 
 function endGame(verdict) {
   let header = null;
   if (verdict == "won") {
     header = `You found ${ooo.toUpperCase()}!`;
+    if (currentPuzzleNumber != null) {
+      if (!(currentPuzzleNumber in solved) || isChecked("overwrite-guesses-checkbox")) {
+        addGuessesToLocalStorage();
+      }
+      $(`#puzzle-dropdown-${currentPuzzleNumber}`).addClass("solved");
+    }
   } else if (verdict == "lost") {
     header = "No answers remain :("
   } else {
@@ -862,22 +947,85 @@ function endGame(verdict) {
   if (currentPuzzleNumber <= 0) {
     previousDisabled = "disabled"
   }
+  let playPriorUnsolvedButtonHTML = `<button class="btn btn-primary overlay-button" onclick="playPreviousUnsolved();" ${previousDisabled}>⇐ Prior unsolved</button>`;
   let playPreviousButtonHTML = `<button class="btn btn-primary overlay-button" id="play-previous-btn" onclick="playPrevious();" ${previousDisabled}>← Play prior</button>`;
   let playNextButtonHTML = `<button class="btn btn-primary overlay-button" id="play-next-btn" onclick="playNext();" ${nextDisabled}>Play next →</button>`;
+  let playNextUnsolvedButtonHTML = `<button class="btn btn-primary overlay-button" onclick="playNextUnsolved();" ${nextDisabled}>Next unsolved ⇒</button>`;
+  
   if (customOOO) {
     playPreviousButtonHTML = "";
     playNextButtonHTML = "";
   }
   const shareIconImgTag = '<img src="assets/images/share.svg">'
+
+  // construct dist visual
+  let progressBarsHTML = []
+  let remainingTotal = dist.total;
+  for (let i = 1; i <= 7; i++) {
+    let count = i in dist ? dist[i] : 0;
+    let label = i;
+    if (i == 7) {
+      count = remainingTotal;
+      label = '7+';
+    }
+    let pct = Math.round(count / dist.total * 100);
+    progressBarsHTML.push(`
+    <div style="display: inline-block; width: 5%; text-align: left">${label}</div>
+    <div class="progress" style="display: inline-block; width: 90%">
+      <div class="progress-bar ${i == guesses.length ? "bg-warning" : "bg-secondary"}" role="progressbar" style="width: ${pct}%" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100">${count}</div>
+    </div>
+    `);
+    remainingTotal -= count;
+  }
+  if (remainingTotal != 0) {
+    console.log(`debug: after creating dist visual, remaining total should be 0 but instead ${remainingTotal}`)
+  }
+  
   let endgameOverlay = `
-  <div class="overlay"><h2>${header}</h2><p id="guessIcons">${guessIconsByRound.join("<br>")}
-  <br><button class="btn btn-primary" id="copy-to-clipboard-button">Share ${shareIconImgTag}</button>
-  <br><button class="btn btn-primary" id="reddit-share-button">Reddit Spoiler Tags ${shareIconImgTag}</button>
-  </p>${playPreviousButtonHTML}<button class="btn btn-secondary overlay-button play-again">Restart</button>${playNextButtonHTML}</div>
+  <div class="overlay">
+    <h2>${header}</h2>
+
+    <div class="overlay-subheader">Share Icons</div>
+    <div>${guessIconsByRound.join("</div><div>")}</div>
+    <p><button class="btn btn-primary" id="copy-to-clipboard-button">Share Standard ${shareIconImgTag}</button> <button class="btn btn-primary" id="reddit-share-button">Share w/ Reddit Spoiler Tags ${shareIconImgTag}</button></p>
+    
+    <div class="overlay-subheader">Guess Distribution</div>
+    <div class="dist">
+      ${progressBarsHTML.join("<br>")}
+    </div>
+
+    <div class="overlay-subheader">Progress</div>
+    <p>You have solved ${dist.total} out of ${maxPuzzleNumber + 1} total puzzles</p>
+    
+    <div class="overlay-subheader">Play more?</div>
+    <p>${playPreviousButtonHTML} <button class="btn btn-secondary overlay-button play-again">Restart</button> ${playNextButtonHTML}<p>
+    <p>${playPriorUnsolvedButtonHTML} ${playNextUnsolvedButtonHTML}</p>
+  </div>
   `;
   $("#date-box").append(endgameOverlay);
   setOverlayBackgroundColor();
   disableMainInputs();
+}
+
+function addGuessesToLocalStorage() {
+  // decrement dist from old guesses IF already solved
+  if (currentPuzzleNumber in solved) { 
+    dist[solved[currentPuzzleNumber].guesses.length]--;
+    dist.total--;
+  }
+
+  // update solved data
+  solved[currentPuzzleNumber] = {solvedDate: today, guesses: guesses};
+  setItemLocalStorage(solvedKeyLocalStorage, solved);
+  
+  // update dist
+  if (guesses.length in dist) {
+    dist[guesses.length]++;
+  } else {
+    dist[guesses.length] = 1;
+  }
+  dist.total++;
+  setItemLocalStorage(distKeyLocalStorage, dist);
 }
 
 function disableMainInputs() {
@@ -904,16 +1052,39 @@ function getShareLink() {
   return shareLink;
 }
 
-function animateCopy(element) {
+function animateButtonClick(element, newText) {
   const origBackgroundColor = element.css("background-color");
   const origHTML = element.html();
   element.css("background-color", "green");
-  element.text("Copied! ✔");
+  element.text(newText);
   setTimeout(function () {
     element.css("background-color", origBackgroundColor);
     element.html(origHTML);
   }, 2000);
   element.blur();
+}
+
+function animateCopy(element) {
+  animateButtonClick(element, "Copied! ✔");
+}
+
+function animateViewAnswer() {
+  let element = $("#view-answer-button");
+  animateButtonClick(element, ooo.toUpperCase());
+  element.blur();
+}
+
+function displayOldGuesses() {
+  $("#overwrite-guesses-checkbox").prop("checked", false)  // don't allow overwriting
+  oldGuesses = solved[currentPuzzleNumber].guesses;
+  for (let i = 0; i < oldGuesses.length; i++) {
+    guess = oldGuesses[i];
+    for (let j = 0; j < numLetters; j++) {
+        $(`#row${i}col${j}`).text(guess[j]);
+    }
+    processGuess(submitGuess=false);
+  }
+  $("#view-guesses-button").blur();
 }
 
 function clickAShareButton(buttonId, guessIconsArr, shareLink = null) {
@@ -957,23 +1128,13 @@ function shareOrCopyToClipboard(shareText, elementId) {
 
 // when play again? button is clicked
 $(document).on("click", ".play-again", function() {
-  $(".overlay").remove();
-  enableMainInputs();
   restartGame(ooo);
 })
 
 // when continue button is clicked
 $(document).on("click", ".continue", function() {
-  $(".overlay").remove();
-  enableMainInputs();
+  resume();
 })
-
-function isValidDate(newDate) {
-  if (!newDate | newDate < earliestDate | newDate > today) {
-    return false;
-  }
-  return true;
-}
 
 function dateChange() {
   const newDate = $("#date-selector-button").val();
@@ -981,8 +1142,6 @@ function dateChange() {
   $("#date-selector-button").blur();  // remove focus from date selector; prevent keyboard event interference
   if (isValidDate(newDate)) {
     date = newDate;
-    currentPuzzleNumber = convertDateToPuzzleNumber(date);
-    $("#puzzle-selector-button").text(`#${currentPuzzleNumber}`)
     restartGame();
   } else {
     $("#date-box").append(`<p id="bad-date-message" class="bad-message">Invalid date; still using ${date}<p>`);
@@ -1001,30 +1160,61 @@ function puzzleNumberChange(puzzleNumber) {
   }
   const newDate = convertPuzzleNumberToDate(puzzleNumber);
   $("#date-selector-button").val(newDate);
-  $("#puzzle-selector-button").text(`#${puzzleNumber}`)
   $(".dropdown-content").hide();
   dateChange();
 }
 
 function playNext() {
-  $(".overlay").remove();
-  enableMainInputs();
   puzzleNumberChange(currentPuzzleNumber + 1);
 }
 
 function playPrevious() {
-  $(".overlay").remove();
-  enableMainInputs();
-  if (currentPuzzleNumber == 0) {
-    return
-  }
   puzzleNumberChange(currentPuzzleNumber - 1);
 }
 
-function clickSubmit() {
+function playNextUnsolved() {
+  newPuzzleNumber = currentPuzzleNumber + 1;
+  while (newPuzzleNumber <= maxPuzzleNumber) {
+    if (newPuzzleNumber in solved) {
+      newPuzzleNumber++;
+    } else {
+      return puzzleNumberChange(newPuzzleNumber);
+    }
+  }
+}
+
+function playPreviousUnsolved() {
+  newPuzzleNumber = currentPuzzleNumber - 1;
+  while (newPuzzleNumber >= 0) {
+    if (newPuzzleNumber in solved) {
+      newPuzzleNumber--;
+    } else {
+      return puzzleNumberChange(newPuzzleNumber);
+    }
+  }
+}
+
+function playEarliestUnsolved() {
+  $("#play-earliest-unsolved-button").blur();
+  for (let i = 0; i <= maxPuzzleNumber; i++) {
+    if (i in solved) {
+      continue;
+    } else {
+      return puzzleNumberChange(i);
+    }
+  }
+}
+
+function resume() {
+  $(".overlay").remove();
+  enableMainInputs();
+}
+
+function clickSubmitCustomWord() {
   let newOoo = $("#custom-wordle").val().toLowerCase();
   if (wordleAcceptableWords.has(newOoo)) {
     customOOO = newOoo;
+    currentPuzzleNumber = null;
     restartGame();
     $("#custom-wordle").val("");
 
@@ -1040,6 +1230,7 @@ function clickSubmit() {
     // clear and hide date/number selector
     $(".date-selector").hide()
     $(".dropdown").hide()
+    $("#play-earliest-unsolved-button").hide();
     $("#wordle-by-date-button").show();
 
     $("#custom-wordle").blur();

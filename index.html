@@ -62,7 +62,7 @@
           <span id="custom-wordle-share-text"></span>
           <button class="btn btn-primary btn-lg bottom-button" id="custom-wordle-copy-clipboard">Share <img src="assets/images/share.svg"></button>
         </p>
-        <button class="btn btn-primary btn-lg bottom-button" id="custom-wordle-submit-button" onclick="clickSubmit();">Enter</button>
+        <button class="btn btn-primary btn-lg bottom-button" id="custom-wordle-submit-button" onclick="clickSubmitCustomWord();">Enter</button>
         <button type="button" class="btn btn-secondary btn-lg bottom-button" id="custom-close-button" onclick="toggleCustom();">Close</button>
       </div>
     </div>
@@ -103,6 +103,14 @@
     <div class="row">
       <div class="col-lg-4 text-center" id="date-box">
         <button type="button" class="btn btn-primary btn-lg" id="wordle-by-date-button">Play Wordles By Date</button>
+        <div id="view-answer">
+          <p id="view-answer-text"></p>
+          <p>
+            <button type="button" class="btn btn-secondary btn-md main-input" id="view-answer-button" onclick="animateViewAnswer();">View Answer</button>
+            <button type="button" class="btn btn-secondary btn-md main-input" id="view-guesses-button" onclick="displayOldGuesses();">View Old Guesses</button>
+          </p>
+          <p>Playing this puzzle again won't change your distribution UNLESS you check this box: <input type="checkbox" id="overwrite-guesses-checkbox"></input></p>
+        </div>
       </div>
       <div class="col-lg-4" id="guesses">
         <div class="letter-tiles-grid">
