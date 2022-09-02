@@ -14853,7 +14853,5 @@ const wordleAcceptableWords = new Set([
   "zygal",
   "zygon",
   "zymes",
-  "zymic",
-  ​
-  
+  "zymic"
 ])
