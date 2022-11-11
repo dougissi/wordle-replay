@@ -145,14 +145,6 @@ function convertStringToDate(dateStr) {
   return dt
 }
 
-function convertPuzzleNumberToDate(puzzleNumber) {
-  puzzleDate = new Date(earliestDate);  // initialize
-  const offset = puzzleDate.getTimezoneOffset();
-  puzzleDate.setTime(puzzleDate.getTime() + (offset * 60 * 1000))
-  puzzleDate.setDate(puzzleDate.getDate() + puzzleNumber);
-  return convertDateToString(puzzleDate)
-}
-
 function subtractOneDay(dateStr) {
   const dt = convertStringToDate(dateStr)
   dt.setDate(dt.getDate() - 1);
@@ -1174,7 +1166,7 @@ function puzzleNumberChange(puzzleNumber) {
   if (puzzleNumber > maxPuzzleNumber) {
     return
   }
-  const newDate = convertPuzzleNumberToDate(puzzleNumber);
+  const newDate = puzzleNumToDate.get(puzzleNumber);
   $("#date-selector-button").val(newDate);
   $(".dropdown-content").hide();
   dateChange();
