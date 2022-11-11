@@ -2,8 +2,11 @@
 const todayRaw = new Date();
 const today = getDateToday();
 const earliestDate = "2021-06-19";
-const maxPuzzleNumber = convertDateToPuzzleNumber(today);
+let ooo = null;
 let date = today;
+let maxPuzzleNumber = null;
+getMaxes();
+
 let currentPuzzleNumber = maxPuzzleNumber;
 const urlParams = getURLParams();
 const urlDate = urlParams.get("date");
@@ -37,7 +40,6 @@ let guesses = [];
 let guessIconsByRound = [];
 let remainingValidWordsByRound = [];
 let guessResultsByPosition = null;
-let ooo = null;
 let customOOO = null;
 let customShareLink = null;
 let isDarkMode = false;
@@ -116,6 +118,18 @@ function convertDateToString(dateObj) {
   return dateStr;
 }
 
+function getMaxes() {
+  ooo = dateToWord.get(today);
+  let dateToCheck = today;
+  while (!ooo && dateToCheck >= earliestDate) {
+    let priorDate = subtractOneDay(dateToCheck);
+    ooo = dateToWord.get(priorDate);
+    dateToCheck = priorDate;
+  }
+  date = dateToCheck;
+  maxPuzzleNumber = dateToPuzzleNum.get(date);
+}
+
 function isValidDate(newDate) {
   if (!newDate | newDate < earliestDate | newDate > today) {
     return false;
@@ -123,8 +137,12 @@ function isValidDate(newDate) {
   return true;
 }
 
-function convertDateToPuzzleNumber(datestr) {
-  return (new Date(datestr) - new Date(earliestDate)) / (1000 * 60 * 60 * 24);
+function convertStringToDate(dateStr) {
+  const dt = new Date(dateStr);
+  // console.log(date)
+  const offset = dt.getTimezoneOffset();
+  dt.setTime(dt.getTime() + (offset * 60 * 1000))
+  return dt
 }
 
 function convertPuzzleNumberToDate(puzzleNumber) {
@@ -135,8 +153,15 @@ function convertPuzzleNumberToDate(puzzleNumber) {
   return convertDateToString(puzzleDate)
 }
 
+function subtractOneDay(dateStr) {
+  const dt = convertStringToDate(dateStr)
+  dt.setDate(dt.getDate() - 1);
+  // console.log("prior day:", date)
+  return convertDateToString(dt);
+}
+
 function updateCurrentPuzzleNumber() {
-  currentPuzzleNumber = convertDateToPuzzleNumber(date);
+  currentPuzzleNumber = dateToPuzzleNum.get(date);
 }
 
 function getURLParams() {
@@ -176,16 +201,7 @@ function setItemLocalStorage(key, value) {
 }
 
 function getOOO() {
-  let xd = "";
-  for (const x of date) {
-    xd += numberXXX.get(x);
-  }
-  const xw = xxx.get(xd);
-  let o = "";
-  for (const x of xw) {
-    o += xxxLetter.get(x);
-  }
-  return o;
+  return dateToWord.get(date);
 }
 
 function buildDateAndPuzzleNumberSelectors() {
