@@ -515,4 +515,5 @@ const dateToWord = new Map([
     ['2022-11-14', 'maple'],
     ['2022-11-15', 'snarl'],
     ['2022-11-16', 'baker'],
+    ['2022-11-17', 'there'],
 ])
