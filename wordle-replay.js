@@ -197,7 +197,7 @@ function getOOO() {
 }
 
 function buildDateAndPuzzleNumberSelectors() {
-  let dateSelectorHTML = `<label class="date-selector main-input" for="date-selector-button">Wordle date:</label>\n<input type="date" class="date-selector" id="date-selector-button" value="${date}" min="${earliestDate}" max="${today}" onchange="dateChange();">`;
+  let dateSelectorHTML = `<label class="date-selector main-input" for="date-selector-button">Wordle date:</label>\n<input type="date" class="date-selector" id="date-selector-button" value="${date}" min="${earliestDate}" max="${date}" onchange="dateChange();">`;
   
   // Puzzle Number Drop Down
   let puzzleNumberLinksHTML = "";
