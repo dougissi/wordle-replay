@@ -549,4 +549,5 @@ const dateToWord = new Map([
     ['2022-12-18', 'taper'],
     ['2022-12-19', 'slate'],
     ['2022-12-20', 'third'],
+    ['2022-12-21', 'lunar'],
 ])
