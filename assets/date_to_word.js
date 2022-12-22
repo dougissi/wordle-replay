@@ -551,4 +551,5 @@ const dateToWord = new Map([
     ['2022-12-20', 'third'],
     ['2022-12-21', 'lunar'],
     ['2022-12-22', 'excel'],
+    ['2022-12-23', 'aorta'],
 ])
