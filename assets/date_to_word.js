@@ -590,4 +590,5 @@ const dateToWord = new Map([
     ['2023-01-28', 'flirt'],
     ['2023-01-29', 'fishy'],
     ['2023-01-30', 'crave'],
+    ['2023-01-31', 'cross'],
 ])
