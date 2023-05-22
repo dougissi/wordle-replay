@@ -880,6 +880,7 @@ function toggleAbout() {
   $("#about").toggle();
   $("#about-button").blur();
   $("#custom").hide();
+  $("#history").hide();
 }
 
 function toggleCustom() {
@@ -887,6 +888,7 @@ function toggleCustom() {
   $("#custom-button").blur();
   $("#custom-wordle").select();
   $("#about").hide();
+  $("#history").hide();
 }
 
 function setToDarkMode() {
@@ -900,6 +902,7 @@ function setToDarkMode() {
   $("#date-selector-button").css("color", "white");
   $("#custom-wordle").css("background-color", "var(--darkbackground)");
   $("#custom-wordle").css("color", "white");
+  $("pre").css("color", lightGrayRGB);
   isDarkMode = true;
 }
 
@@ -916,6 +919,7 @@ function toggleDarkMode() {
     $("#date-selector-button").css("color", "initial");
     $("#custom-wordle").css("background-color", "initial");
     $("#custom-wordle").css("color", "initial");
+    $("pre").css("color", "initial");
     isDarkMode = false;
   } else {
     setToDarkMode();
@@ -965,9 +969,36 @@ function endGame(verdict) {
     playNextButtonHTML = "";
   }
   const shareIconImgTag = '<img src="assets/images/share.svg">'
+  
+  let endgameOverlay = `
+  <div class="overlay">
+    <h2>${header}</h2>
 
+    <div class="overlay-subheader">Share Icons</div>
+    <div>${guessIconsByRound.join("</div><div>")}</div>
+    <p><button class="btn btn-primary" id="copy-to-clipboard-button">Share Standard ${shareIconImgTag}</button> <button class="btn btn-primary" id="reddit-share-button">Share w/ Reddit Spoiler Tags ${shareIconImgTag}</button></p>
+    
+    <div class="overlay-subheader">Guess Distribution</div>
+    <div class="dist">
+      ${getProgressBarsHTML().join("<br>")}
+    </div>
+
+    <div class="overlay-subheader">Progress</div>
+    <p>You have solved ${dist.total} out of ${maxPuzzleNumber + 1} total puzzles</p>
+    
+    <div class="overlay-subheader">Play more?</div>
+    <p>${playPreviousButtonHTML} <button class="btn btn-secondary overlay-button play-again">Restart</button> ${playNextButtonHTML}<p>
+    <p>${playPriorUnsolvedButtonHTML} ${playNextUnsolvedButtonHTML}</p>
+  </div>
+  `;
+  $("#date-box").append(endgameOverlay);
+  setOverlayBackgroundColor();
+  disableMainInputs();
+}
+
+function getProgressBarsHTML() {
   // construct dist visual
-  let progressBarsHTML = []
+  const progressBarsHTML = []
   let remainingTotal = dist.total;
   for (let i = 1; i <= 7; i++) {
     let count = i in dist ? dist[i] : 0;
@@ -988,31 +1019,7 @@ function endGame(verdict) {
   if (remainingTotal != 0) {
     console.log(`debug: after creating dist visual, remaining total should be 0 but instead ${remainingTotal}`)
   }
-  
-  let endgameOverlay = `
-  <div class="overlay">
-    <h2>${header}</h2>
-
-    <div class="overlay-subheader">Share Icons</div>
-    <div>${guessIconsByRound.join("</div><div>")}</div>
-    <p><button class="btn btn-primary" id="copy-to-clipboard-button">Share Standard ${shareIconImgTag}</button> <button class="btn btn-primary" id="reddit-share-button">Share w/ Reddit Spoiler Tags ${shareIconImgTag}</button></p>
-    
-    <div class="overlay-subheader">Guess Distribution</div>
-    <div class="dist">
-      ${progressBarsHTML.join("<br>")}
-    </div>
-
-    <div class="overlay-subheader">Progress</div>
-    <p>You have solved ${dist.total} out of ${maxPuzzleNumber + 1} total puzzles</p>
-    
-    <div class="overlay-subheader">Play more?</div>
-    <p>${playPreviousButtonHTML} <button class="btn btn-secondary overlay-button play-again">Restart</button> ${playNextButtonHTML}<p>
-    <p>${playPriorUnsolvedButtonHTML} ${playNextUnsolvedButtonHTML}</p>
-  </div>
-  `;
-  $("#date-box").append(endgameOverlay);
-  setOverlayBackgroundColor();
-  disableMainInputs();
+  return progressBarsHTML;
 }
 
 function addGuessesToLocalStorage() {
@@ -1266,3 +1273,40 @@ $("#wordle-by-date-button").click( function() {
 $("#custom-wordle-copy-clipboard").click( function() {
   shareOrCopyToClipboard(customShareLink, "custom-wordle-copy-clipboard");
 })
+
+function toggleHistory() {
+  if ($("#history").css("display") == 'none') {
+    progressBarsHTML = getProgressBarsHTML();
+    $("#guess-history-progress-bars").html(progressBarsHTML)
+    $(".guess-history-text").text(JSON.stringify(solved, null, 4))
+    setOverlayBackgroundColor();
+  }
+  $("#history").toggle();
+  $("#about").hide();
+  $("#custom").hide();
+}
+
+function downloadJson(obj, filename) {
+  const a = document.createElement('a');
+  const file = new Blob([JSON.stringify(obj, null, 4)], {type: "application/json"});
+  a.href = URL.createObjectURL(file);
+  a.download = filename;
+  a.click();
+}
+
+function downloadHistory() {
+  const dateString = new Date().toLocaleString('sv').replace(' ', '_').replace(':', 'h').replace(':', 'm') + 's';
+  const filename = `wordlereplay_history_${dateString}.json`
+  const history = {
+    "distribution": dist,
+    "solvedPuzzles": solved
+  }
+  downloadJson(history, filename)
+}
+
+function downloadHistoryThenClear() {
+  downloadHistory();
+  window.localStorage.removeItem(solvedKeyLocalStorage);
+  window.localStorage.removeItem(distKeyLocalStorage);
+  location.reload();
+}

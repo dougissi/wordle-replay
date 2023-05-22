@@ -57,6 +57,7 @@
               <a class="nav-link" href="#" id="custom-button" onclick="toggleCustom();">Custom Wordle</a>
               <a class="nav-link" href="#" id="dark-mode-button" onclick="toggleDarkMode();">Dark Mode</a>
               <a class="nav-link" href="https://docs.google.com/forms/d/e/1FAIpQLSfKeTZCnnicWaVnn0PpGWvUjZvjrXeA7rx1wZUKCNnJJbIthA/viewform?usp=sf_link" target="_blank" rel="noopener noreferrer">Feedback</a>
+              <a class="nav-link" href="#" id="history-button" onClick="toggleHistory();">History</a>
               <a class="nav-link" href="https://www.paypal.com/donate/?hosted_button_id=JWHYPBKUV6FQE" id="donate-button" target="_blank" rel="noopener noreferrer">Donate</a>
             </div>
           </div>
@@ -106,6 +107,25 @@
         <h5>Author</h5>
         <p>Wordle Replay was originally created by Doug Issichopoulos (<a href="https://www.dougissi.com" target="_blank" rel="noopener noreferrer">dougissi.com</a>) in late January 2022.</p>
         <button type="button" class="btn btn-secondary btn-lg bottom-button" onclick="toggleAbout();">Close</button>
+      </div>
+    </div>
+    <div class="row" id="history">
+      <div class="col">
+        <h5>Distribution</h5>
+        <div id="guess-history-progress-bars"></div>
+        <br>
+        <h5>Solutions</h5>
+        <p>Solved puzzles in order that you solved them, including your guesses for each. Format:</p>
+        <pre>{puzzleNumberX: {"solvedDate": "YYYY-MM-DD", "guesses": [guess1, guess2, guess3,...]}, puzzleNumberY: {...}, ...}</pre>
+        <div class="words-box guess-history-text"></div>
+        <br>
+        <h5>DANGER ZONE</h5>
+        <p><button type="button" class="btn btn-danger btn-md" id="clear-guess-history" onClick="downloadHistoryThenClear();">Download History then Clear it</button></p>
+        <h5>SAFE ZONE</h5>
+        <p>
+          <button type="button" class="btn btn-primary btn-md" id="download-history" onClick="downloadHistory();">Download History</button>
+          <button type="button" class="btn btn-secondary btn-md" id="guess-history-exit" onClick="toggleGuessHistory();">Close</button>
+        </p>
       </div>
     </div>
   </div>

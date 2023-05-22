@@ -51,6 +51,16 @@ h1 {
   touch-action: manipulation;
 }
 
+#history {
+  display: none;
+  touch-action: manipulation;
+}
+
+.guess-history-text {
+  white-space: pre-wrap;
+  text-align: left;
+}
+
 .bottom-button {
   margin-bottom: 5px;
 }
