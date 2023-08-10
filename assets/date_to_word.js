@@ -1,4 +1,4 @@
-(const dateToWord = new Map([
+const dateToWord = new Map([
     ['2021-06-19', 'cigar'],
     ['2021-06-20', 'rebut'],
     ['2021-06-21', 'sissy'],
