@@ -131,7 +131,7 @@ function getMaxes() {
 }
 
 function isValidDate(newDate) {
-  if (!newDate | newDate < earliestDate | newDate > today) {
+  if (!newDate || newDate < earliestDate || newDate > today) {
     return false;
   }
   return true;
@@ -497,7 +497,7 @@ function getGuessResult(guess) {
 }
 
 function evaluateGuess(guessWord, guessResult) {
-  if (guessWord.length != numLetters | guessResult.length != numLetters) {
+  if (guessWord.length != numLetters || guessResult.length != numLetters) {
     throw `guessed word and result must both contain ${numLetters} letters`
   }
   let guessKnownLetterMinCounts = new MapWithDefault(() => 0);
@@ -696,15 +696,15 @@ function colorGuess(guess, guessResult) {
     let keyCode = letterToKeyCode.get(letter);
     let key = $(`#${keyCode}`);
     let keyColor = key.css("background-color");
-    if (keyColor == lightGrayRGB | keyColor == darkKeyRGB) {
+    if (keyColor == lightGrayRGB || keyColor == darkKeyRGB) {
       key.css("background-color", `var(--dark${isDarkMode}-${color})`);
       key.css("color", "white")
-    } else if (keyColor == grayRGB | keyColor == darkGrayRGB) {
-      if (color == "yellow" | color == "green") {
+    } else if (keyColor == grayRGB || keyColor == darkGrayRGB) {
+      if (color == "yellow" || color == "green") {
         key.css("background-color", `var(--dark${isDarkMode}-${color})`);
         key.css("color", "white")
       }
-    } else if (keyColor == yellowRGB | keyColor == darkYellowRGB) {
+    } else if (keyColor == yellowRGB || keyColor == darkYellowRGB) {
       if (color == "green") {
         key.css("background-color", `var(--dark${isDarkMode}-${color})`);
         key.css("color", "white")
@@ -752,7 +752,7 @@ function setTileBorder() {
 
 function keyActions(key, keyCode) {
   if ($(".overlay").length) {  // overlay exists
-    if (keyCode == 13 | keyCode == 8) {  // key is enter or delete
+    if (keyCode == 13 || keyCode == 8) {  // key is enter or delete
       $(".overlay-button").click();
     }
   } else if ($("#custom").is(":visible")) {
