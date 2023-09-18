@@ -10,8 +10,13 @@ getMaxes();
 let currentPuzzleNumber = maxPuzzleNumber;
 const urlParams = getURLParams();
 const urlDate = urlParams.get("date");
-if (isValidDate(urlDate)) {
+const urlNum = Number(urlParams.get("num"));
+if (!urlNum && isValidDate(urlDate)) {
   date = urlDate;
+  updateCurrentPuzzleNumber();
+}
+if (!urlDate && isValidNum(urlNum)) {
+  date = puzzleNumToDate.get(Number(urlNum));
   updateCurrentPuzzleNumber();
 }
 const solvedKeyLocalStorage = "wordlereplay-solved";
@@ -132,6 +137,13 @@ function getMaxes() {
 
 function isValidDate(newDate) {
   if (!newDate || newDate < earliestDate || newDate > today) {
+    return false;
+  }
+  return true;
+}
+
+function isValidNum(newNum) {
+  if (!newNum || newNum < 0 || newNum > maxPuzzleNumber) {
     return false;
   }
   return true;
