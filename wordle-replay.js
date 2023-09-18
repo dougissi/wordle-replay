@@ -143,6 +143,9 @@ function isValidDate(newDate) {
 }
 
 function isValidNum(newNum) {
+  if (newNum == 0) {
+    return true;
+  }
   if (!newNum || newNum < 0 || newNum > maxPuzzleNumber) {
     return false;
   }
