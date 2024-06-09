@@ -1,8 +1,6 @@
 # wordle-replay
-Wordle Replay (originally Wordle Helper) allows you to replay any [Wordle](https://www.powerlanguage.co.uk/wordle/) that's been published to date.
+[DEPRECATED]
 
-Wordle Replay also provides what it considers to be the top suggestions for your next guess in case you get stuck.
+This is the original version of the application was written using [JQuery](https://jquery.com/) and [Bootstrap](https://getbootstrap.com/) in early 2022, which can be played here: [dougissi.com/wordle-replay](https://www.dougissi.com/wordle-replay).
 
-Or create your own Wordle and stump your family and friends!
-
-Check it out at [wordlereplay.com](https://www.wordlereplay.com/).
+The _new_ version provides many new features and is written using [React](https://react.dev/) and [Material UI](https://mui.com/), and can be found here: [GitHub repo](https://github.com/dougissi/wordle-replay-react) and [wordlereplay.com](https://wordlereplay.com).
